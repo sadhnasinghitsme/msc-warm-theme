@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard &mdash; SKS Admin</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <h2>SKS Admin</h2>
+    <p class="admin-email" id="adminEmail"></p>
+    <div class="nav-item active" data-panel="enquiries">Admission Enquiries</div>
+    <div class="nav-item" data-panel="contact">Contact Messages</div>
+    <div class="nav-item" data-panel="content">Site Content</div>
+    <div class="nav-spacer"></div>
+    <div class="nav-item" id="logoutBtn">Log Out</div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ENQUIRIES -->
+    <section class="panel active" id="panel-enquiries">
+      <h1>Admission Enquiries</h1>
+      <p class="page-sub">Submissions from the hero quick-form, the enquiry section, and the scroll popup.</p>
+      <div class="toolbar">
+        <select id="enquiryStatusFilter">
+          <option value="">All statuses</option>
+          <option value="new">New</option>
+          <option value="contacted">Contacted</option>
+          <option value="enrolled">Enrolled</option>
+          <option value="closed">Closed</option>
+        </select>
+        <input type="text" id="enquirySearch" placeholder="Search name, phone, email...">
+        <button class="btn btn-secondary btn-small" id="enquiryRefresh">Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th><th>Name</th><th>Phone</th><th>Email</th><th>Specialization</th><th>Source</th><th>Status</th><th>Notes</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="enquiryTableBody"></tbody>
+        </table>
+        <div class="empty-state" id="enquiryEmpty" style="display:none;">No enquiries found.</div>
+        <div class="loading-state" id="enquiryLoading">Loading...</div>
+      </div>
+      <div class="pagination" id="enquiryPagination"></div>
+    </section>
+
+    <!-- CONTACT MESSAGES -->
+    <section class="panel" id="panel-contact">
+      <h1>Contact Messages</h1>
+      <p class="page-sub">Submissions from the site's contact form.</p>
+      <div class="toolbar">
+        <select id="contactStatusFilter">
+          <option value="">All statuses</option>
+          <option value="new">New</option>
+          <option value="read">Read</option>
+          <option value="closed">Closed</option>
+        </select>
+        <button class="btn btn-secondary btn-small" id="contactRefresh">Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th><th>Name</th><th>Email</th><th>Phone</th><th>Subject</th><th>Message</th><th>Status</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="contactTableBody"></tbody>
+        </table>
+        <div class="empty-state" id="contactEmpty" style="display:none;">No messages found.</div>
+        <div class="loading-state" id="contactLoading">Loading...</div>
+      </div>
+      <div class="pagination" id="contactPagination"></div>
+    </section>
+
+    <!-- CONTENT -->
+    <section class="panel" id="panel-content">
+      <h1>Site Content</h1>
+      <p class="page-sub">Edit text and images the frontend pulls in dynamically &mdash; no code changes needed. Changes appear on the live site within about a minute.</p>
+      <div class="content-list" id="contentList"></div>
+      <div class="loading-state" id="contentLoading">Loading...</div>
+
+      <div class="new-content-form">
+        <h3>Add a new content block</h3>
+        <label for="newKey">Key (used by the frontend, e.g. <code>hero.title</code>)</label>
+        <input type="text" id="newKey" placeholder="section.fieldName">
+        <label for="newLabel">Label (shown here in the admin panel)</label>
+        <input type="text" id="newLabel" placeholder="e.g. Hero heading">
+        <label for="newType">Type</label>
+        <select id="newType">
+          <option value="text">Text</option>
+          <option value="richtext">Rich text (paragraph)</option>
+          <option value="image">Image URL</option>
+        </select>
+        <label for="newValue">Value</label>
+        <textarea id="newValue" rows="3"></textarea>
+        <button class="btn btn-small" id="addContentBtn">Add Block</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

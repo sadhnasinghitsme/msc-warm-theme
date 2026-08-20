@@ -164,3 +164,111 @@
   lightbox.addEventListener('click', function(e){ if(e.target === lightbox) closeLightbox(); });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeLightbox(); });
 })();
+
+/* ===== ENQUIRY FORMS: POST to backend API ===== */
+(function(){
+  if(typeof CONFIG === 'undefined' || !CONFIG.API_BASE_URL) return;
+  var forms = Array.prototype.slice.call(document.querySelectorAll('form[data-enquiry-form]'));
+  if(!forms.length) return;
+
+  function setStatus(el, message, isError){
+    if(!el) return;
+    el.textContent = message;
+    el.style.color = isError ? '#b3261e' : '#1f7a4d';
+  }
+
+  forms.forEach(function(form){
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+
+      var statusEl = form.querySelector('[data-form-status]');
+      var nameEl = form.querySelector('[data-field="name"]');
+      var phoneEl = form.querySelector('[data-field="phone"]');
+      var emailEl = form.querySelector('[data-field="email"]');
+      var specEl = form.querySelector('[data-field="specialization"]');
+      var submitBtn = form.querySelector('button[type="submit"]');
+
+      var name = nameEl ? nameEl.value.trim() : '';
+      var phone = phoneEl ? phoneEl.value.trim() : '';
+      var email = emailEl ? emailEl.value.trim() : '';
+      var specialization = specEl ? specEl.value : '';
+      if(specialization.indexOf('Select') === 0) specialization = '';
+
+      if(!name || !phone){
+        setStatus(statusEl, 'Please enter your name and phone number.', true);
+        return;
+      }
+
+      var payload = {
+        name: name,
+        phone: phone,
+        source: form.getAttribute('data-source') || 'other'
+      };
+      if(email) payload.email = email;
+      if(specialization) payload.specialization = specialization;
+
+      if(submitBtn){
+        submitBtn.disabled = true;
+        submitBtn.setAttribute('data-original-text', submitBtn.textContent);
+        submitBtn.textContent = 'Submitting...';
+      }
+      setStatus(statusEl, '', false);
+
+      fetch(CONFIG.API_BASE_URL + '/api/enquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(function(res){
+          return res.json()
+            .catch(function(){ return {}; })
+            .then(function(data){ return { ok: res.ok, data: data }; });
+        })
+        .then(function(result){
+          if(!result.ok){
+            throw new Error((result.data && result.data.message) || 'Something went wrong. Please try again.');
+          }
+          setStatus(statusEl, 'Thank you! Our admission team will contact you shortly.', false);
+          form.reset();
+        })
+        .catch(function(err){
+          setStatus(statusEl, err.message || 'Something went wrong. Please try again or call us directly.', true);
+        })
+        .finally(function(){
+          if(submitBtn){
+            submitBtn.disabled = false;
+            submitBtn.textContent = submitBtn.getAttribute('data-original-text');
+          }
+        });
+    });
+  });
+})();
+
+/* ===== DYNAMIC CONTENT: fill in [data-content-key] elements from the admin-editable content API ===== */
+(function(){
+  if(typeof CONFIG === 'undefined' || !CONFIG.API_BASE_URL) return;
+  var targets = Array.prototype.slice.call(document.querySelectorAll('[data-content-key]'));
+  if(!targets.length) return;
+
+  fetch(CONFIG.API_BASE_URL + '/api/content')
+    .then(function(res){
+      if(!res.ok) throw new Error('Failed to load content (' + res.status + ')');
+      return res.json();
+    })
+    .then(function(map){
+      targets.forEach(function(el){
+        var key = el.getAttribute('data-content-key');
+        if(!Object.prototype.hasOwnProperty.call(map, key)) return;
+        var value = map[key];
+        if(value === undefined || value === null || value === '') return;
+        if(el.tagName === 'IMG'){
+          el.src = value;
+        } else {
+          el.textContent = value;
+        }
+      });
+    })
+    .catch(function(err){
+      console.warn('Dynamic content unavailable, using page defaults.', err);
+    });
+})();

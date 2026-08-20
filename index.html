@@ -8,13 +8,14 @@
 </head>
 <body>
 <link rel="stylesheet" href="style.css">
+<script src="config.js"></script>
 
 <!-- ============ HEADER ============ -->
 <header class="site-header">
   <div class="header-inner">
     <div class="brand-lockup">
       <div class="logo-plate">
-        <img class="logo-mark" src="images/sks-logo-white.png" alt="SKS International University">
+        <img class="logo-mark" src="images/sks-logo-white.png" alt="SKS International University" data-content-key="header.logo">
       </div>
       <small>School of Medicine &middot; Mathura</small>
     </div>
@@ -74,8 +75,8 @@
 
   <div class="hero-grid">
     <div>
-      <h1 class="hero-title">MSc Medical Admissions 2026 &mdash; SKS International University, Mathura</h1>
-      <p class="hero-desc">Build your career in Medical Anatomy, Physiology, Biochemistry, or Microbiology at SKS International University. Our MSc Medical programs follow the NMC's Competency-Based Medical Education (CBME) framework across three academic phases, combining foundational medical science with specialized, hands-on training. Applications for the 2026 batch are now open.</p>
+      <h1 class="hero-title" data-content-key="hero.title">MSc Medical Admissions 2026 &mdash; SKS International University, Mathura</h1>
+      <p class="hero-desc" data-content-key="hero.desc">Build your career in Medical Anatomy, Physiology, Biochemistry, or Microbiology at SKS International University. Our MSc Medical programs follow the NMC's Competency-Based Medical Education (CBME) framework across three academic phases, combining foundational medical science with specialized, hands-on training. Applications for the 2026 batch are now open.</p>
       <ul class="trust-list">
         <li><span class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l6 6L20 6"/></svg></span>CBME Based Curriculum </li>
         <li><span class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.05 7-12A7 7 0 0 0 5 10c0 4.95 7 12 7 12z"/><circle cx="12" cy="10" r="2.2"/></svg></span>50-Acre Campus in Mathura</li>
@@ -92,14 +93,15 @@
 
     <div class="hero-card">
       <h3>Quick Enquiry Form</h3>
-      <form onsubmit="return false;" style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
-        <input type="text" placeholder="Full Name" style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
-        <input type="tel" placeholder="Phone Number" style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
-        <select style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
+      <form onsubmit="return false;" data-enquiry-form data-source="hero-quick-form" style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+        <input type="text" data-field="name" placeholder="Full Name" style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
+        <input type="tel" data-field="phone" placeholder="Phone Number" style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
+        <select data-field="specialization" style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
           <option>Select MSc Specialization</option>
           <option>Microbiology</option><option>Biochemistry</option><option>Anatomy</option><option>Physiology</option>
         </select>
         <button type="submit" class="btn btn-gold" style="border:none;cursor:pointer;">Submit Enquiry</button>
+        <p data-form-status style="font-size:13px;margin:0;min-height:1em;"></p>
       </form>
       <div class="stat-row">
         <div class="stat"><h4>50</h4><p>Acre Campus</p></div>
@@ -115,8 +117,8 @@
     <div>
       <div class="eyebrow">About the University</div>
       <h2>About SKS International University</h2>
-      <p>SKS International University is located in Mathura, Uttar Pradesh, spread across a 50-acre campus. The university offers NMC-regulated MSc Medical programs through its Department of Medical &amp; Allied Health Sciences, including MSc Medical Anatomy, Physiology, Biochemistry, Microbiology.</p>
-      <p>Students are taught by an experienced faculty of 350+ members and have access to more than 20 dedicated academic labs, a well-stocked central library, and full residential campus facilities.</p>
+      <p data-content-key="about.paragraph1">SKS International University is located in Mathura, Uttar Pradesh, spread across a 50-acre campus. The university offers NMC-regulated MSc Medical programs through its Department of Medical &amp; Allied Health Sciences, including MSc Medical Anatomy, Physiology, Biochemistry, Microbiology.</p>
+      <p data-content-key="about.paragraph2">Students are taught by an experienced faculty of 350+ members and have access to more than 20 dedicated academic labs, a well-stocked central library, and full residential campus facilities.</p>
     </div>
     <div class="highlight-grid">
       <div class="highlight-card"><h4>350+</h4><p>Faculty</p></div>
@@ -458,15 +460,16 @@
   <div class="enquiry-grid">
     <div class="enquiry-form-card">
       <h3>Admission Enquiry Form</h3>
-      <form onsubmit="return false;" style="display:flex;flex-direction:column;gap:12px;">
-        <input type="text" placeholder="Full Name" style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
-        <input type="tel" placeholder="Phone Number" style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
-        <input type="email" placeholder="Email Address" style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
-        <select style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
+      <form onsubmit="return false;" data-enquiry-form data-source="enquiry-section" style="display:flex;flex-direction:column;gap:12px;">
+        <input type="text" data-field="name" placeholder="Full Name" style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
+        <input type="tel" data-field="phone" placeholder="Phone Number" style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
+        <input type="email" data-field="email" placeholder="Email Address" style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
+        <select data-field="specialization" style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
           <option>Select MSc Specialization</option>
           <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option><option>Microbiology</option>
         </select>
         <button type="submit" class="btn btn-gold" style="border:none;cursor:pointer;">Submit Enquiry</button>
+        <p data-form-status style="font-size:13px;margin:0;min-height:1em;"></p>
       </form>
     </div>
     <div class="enquiry-map">
@@ -484,7 +487,7 @@
     </div>
     <div>
       <h5>Contact</h5>
-      <p>Phone: +91-9068569915<br>Toll-Free: 1800-889-0478<br>Email: contact@sksinternationaluniversity.ac.in</p>
+      <p>Phone: <span data-content-key="contact.phone">+91-9068569915</span><br>Toll-Free: <span data-content-key="contact.tollfree">1800-889-0478</span><br>Email: <span data-content-key="contact.email">contact@sksinternationaluniversity.ac.in</span></p>
     </div>
   </div>
   <div class="footer-bottom">&copy; 2026 SKS International University. All rights reserved.</div>
@@ -505,15 +508,16 @@
     <div class="eyebrow">MSc Medical Admissions 2026</div>
     <h3>Still Deciding? Check Your Eligibility</h3>
     <p class="sub">Fill in your details and our admission counsellor will call you within 15 minutes.</p>
-    <form class="scroll-popup-form" onsubmit="return false;">
-      <input type="text" placeholder="Full Name">
-      <input type="tel" placeholder="Phone Number">
-      <input type="email" placeholder="Email Address">
-      <select>
+    <form class="scroll-popup-form" onsubmit="return false;" data-enquiry-form data-source="scroll-popup">
+      <input type="text" data-field="name" placeholder="Full Name">
+      <input type="tel" data-field="phone" placeholder="Phone Number">
+      <input type="email" data-field="email" placeholder="Email Address">
+      <select data-field="specialization">
         <option>Select MSc Specialization</option>
         <option>Microbiology</option><option>Biochemistry</option><option>Anatomy</option><option>Physiology</option>
       </select>
       <button type="submit">Submit Enquiry</button>
+      <p data-form-status style="font-size:13px;margin:6px 0 0;min-height:1em;"></p>
     </form>
     <p class="scroll-popup-fine">No enquiry fee. Your details remain confidential.</p>
   </div>
