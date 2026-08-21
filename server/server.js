@@ -13,6 +13,8 @@ const enquiryRoutes = require('./routes/enquiryRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const contentRoutes = require('./routes/contentRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const pageMetaRoutes = require('./routes/pageMetaRoutes');
+const faqRoutes = require('./routes/faqRoutes');
 
 connectDB();
 
@@ -49,6 +51,8 @@ app.use('/api/enquiries', enquiryRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/page-meta', pageMetaRoutes);
+app.use('/api/faqs', faqRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

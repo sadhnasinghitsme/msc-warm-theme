@@ -15,6 +15,8 @@
     <div class="nav-item active" data-panel="enquiries">Admission Enquiries</div>
     <div class="nav-item" data-panel="contact">Contact Messages</div>
     <div class="nav-item" data-panel="content">Site Content</div>
+    <div class="nav-item" data-panel="seo">SEO / Meta Tags</div>
+    <div class="nav-item" data-panel="faqs">FAQ Manager</div>
     <div class="nav-spacer"></div>
     <div class="nav-item" id="logoutBtn">Log Out</div>
   </aside>
@@ -101,6 +103,44 @@
         <label for="newValue">Value</label>
         <textarea id="newValue" rows="3"></textarea>
         <button class="btn btn-small" id="addContentBtn">Add Block</button>
+      </div>
+    </section>
+
+    <!-- SEO / META TAGS -->
+    <section class="panel" id="panel-seo">
+      <h1>SEO / Meta Tags</h1>
+      <p class="page-sub">
+        Edit the title, meta description, canonical URL, and social preview image baked into each page's raw HTML.
+        <strong>A Vercel redeploy is required for changes here to go live</strong> — the build pulls the latest values
+        from this list and writes them into the page's &lt;head&gt; before it ships.
+      </p>
+      <div class="toolbar">
+        <button class="btn btn-secondary btn-small" id="seoRefresh">Refresh</button>
+      </div>
+      <div class="content-list" id="seoList"></div>
+      <div class="loading-state" id="seoLoading">Loading...</div>
+    </section>
+
+    <!-- FAQ MANAGER -->
+    <section class="panel" id="panel-faqs">
+      <h1>FAQ Manager</h1>
+      <p class="page-sub">
+        Add, edit, reorder, and toggle FAQs on and off. <strong>A Vercel redeploy is required</strong> for changes here
+        to reach the live FAQ section and its search-engine FAQPage schema.
+      </p>
+      <div class="toolbar">
+        <button class="btn btn-secondary btn-small" id="faqRefresh">Refresh</button>
+      </div>
+      <div class="content-list" id="faqList"></div>
+      <div class="loading-state" id="faqLoading">Loading...</div>
+
+      <div class="new-content-form">
+        <h3>Add a new FAQ</h3>
+        <label for="newFaqQuestion">Question</label>
+        <input type="text" id="newFaqQuestion" placeholder="e.g. What is the eligibility for MSc Medical Biochemistry admission?">
+        <label for="newFaqAnswer">Answer</label>
+        <textarea id="newFaqAnswer" rows="3"></textarea>
+        <button class="btn btn-small" id="addFaqBtn">Add FAQ</button>
       </div>
     </section>
 

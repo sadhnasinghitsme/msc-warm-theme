@@ -1,0 +1,14 @@
+{
+  "name": "sks-warm-frontend",
+  "private": true,
+  "description": "Static frontend build step — injects per-page SEO meta tags and FAQ content/schema from MongoDB before Vercel deploys.",
+  "scripts": {
+    "build": "node build-meta.js && node build-faqs.js"
+  },
+  "dependencies": {
+    "mongodb": "^6.9.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
