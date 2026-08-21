@@ -17,6 +17,7 @@
     <div class="nav-item" data-panel="content">Site Content</div>
     <div class="nav-item" data-panel="seo">SEO / Meta Tags</div>
     <div class="nav-item" data-panel="faqs">FAQ Manager</div>
+    <div class="nav-item" data-panel="gallery">Gallery</div>
     <div class="nav-spacer"></div>
     <div class="nav-item" id="logoutBtn">Log Out</div>
   </aside>
@@ -141,6 +142,31 @@
         <label for="newFaqAnswer">Answer</label>
         <textarea id="newFaqAnswer" rows="3"></textarea>
         <button class="btn btn-small" id="addFaqBtn">Add FAQ</button>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section class="panel" id="panel-gallery">
+      <h1>Gallery</h1>
+      <p class="page-sub">
+        Upload, caption, reorder, and remove gallery images. Images upload directly to Cloudinary.
+      </p>
+      <div class="toolbar">
+        <button class="btn btn-secondary btn-small" id="galleryRefresh">Refresh</button>
+      </div>
+      <div class="gallery-grid-admin" id="galleryList"></div>
+      <div class="empty-state" id="galleryEmpty" style="display:none;">No images yet.</div>
+      <div class="loading-state" id="galleryLoading">Loading...</div>
+
+      <div class="new-content-form">
+        <h3>Add a new image</h3>
+        <label for="newGalleryFile">Image file</label>
+        <input type="file" id="newGalleryFile" accept="image/*">
+        <label for="newGalleryCaption">Caption (optional)</label>
+        <input type="text" id="newGalleryCaption" placeholder="e.g. Campus Entrance">
+        <label for="newGalleryAlt">Alt text (optional)</label>
+        <input type="text" id="newGalleryAlt" placeholder="Describes the image for accessibility/SEO">
+        <button class="btn btn-small" id="addGalleryBtn">Add Image</button>
       </div>
     </section>
 

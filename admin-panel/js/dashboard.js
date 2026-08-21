@@ -29,6 +29,7 @@ document.querySelectorAll('.nav-item[data-panel]').forEach((item) => {
     if (item.dataset.panel === 'content' && !contentLoaded) loadContent();
     if (item.dataset.panel === 'seo' && !seoLoaded) loadSeo();
     if (item.dataset.panel === 'faqs' && !faqsLoaded) loadFaqs();
+    if (item.dataset.panel === 'gallery' && !galleryLoaded) loadGallery();
   });
 });
 
@@ -606,6 +607,136 @@ document.getElementById('addFaqBtn').addEventListener('click', async () => {
     document.getElementById('newFaqQuestion').value = '';
     document.getElementById('newFaqAnswer').value = '';
     loadFaqs();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+});
+
+// ============================================================
+// GALLERY
+// ============================================================
+let galleryLoaded = false;
+let galleryItems = [];
+
+async function loadGallery() {
+  document.getElementById('galleryLoading').style.display = 'block';
+  document.getElementById('galleryEmpty').style.display = 'none';
+  try {
+    galleryItems = await apiFetch('/api/gallery');
+    galleryLoaded = true;
+    renderGallery();
+  } catch (err) {
+    toast(err.message, 'error');
+  } finally {
+    document.getElementById('galleryLoading').style.display = 'none';
+  }
+}
+
+function renderGallery() {
+  const list = document.getElementById('galleryList');
+  list.innerHTML = '';
+
+  if (!galleryItems.length) {
+    document.getElementById('galleryEmpty').style.display = 'block';
+  }
+
+  galleryItems.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'gallery-card';
+    card.innerHTML = `
+      <img class="gallery-thumb" src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.altText || '')}">
+      <div class="content-head">
+        <div class="content-key">Order: ${item.order} &middot; ${item.isActive ? 'Active' : 'Inactive'}</div>
+        <div class="reorder-buttons">
+          <button class="btn btn-secondary btn-small" data-action="up" ${index === 0 ? 'disabled' : ''} title="Move up">&uarr;</button>
+          <button class="btn btn-secondary btn-small" data-action="down" ${index === galleryItems.length - 1 ? 'disabled' : ''} title="Move down">&darr;</button>
+        </div>
+      </div>
+      <label>Caption</label>
+      <input type="text" data-field="caption" value="${escapeHtml(item.caption || '')}">
+      <label>Alt text</label>
+      <input type="text" data-field="altText" value="${escapeHtml(item.altText || '')}">
+      <label class="checkbox-label"><input type="checkbox" data-field="isActive" ${item.isActive ? 'checked' : ''}> Active</label>
+      <div class="row-actions">
+        <button class="btn btn-small" data-action="save">Save</button>
+        <button class="btn btn-danger btn-small" data-action="delete">Delete</button>
+      </div>
+    `;
+
+    card.querySelector('[data-action="save"]').onclick = async () => {
+      const body = {
+        caption: card.querySelector('[data-field="caption"]').value.trim(),
+        altText: card.querySelector('[data-field="altText"]').value.trim(),
+        isActive: card.querySelector('[data-field="isActive"]').checked,
+      };
+      try {
+        await apiFetch(`/api/gallery/${item._id}`, { method: 'PUT', body: JSON.stringify(body) });
+        toast('Image saved');
+        loadGallery();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    };
+
+    card.querySelector('[data-action="delete"]').onclick = async () => {
+      if (!confirm('Delete this image?')) return;
+      try {
+        await apiFetch(`/api/gallery/${item._id}`, { method: 'DELETE' });
+        toast('Image deleted');
+        loadGallery();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    };
+
+    const upBtn = card.querySelector('[data-action="up"]');
+    const downBtn = card.querySelector('[data-action="down"]');
+    if (!upBtn.disabled) upBtn.onclick = () => swapGalleryOrder(index, index - 1);
+    if (!downBtn.disabled) downBtn.onclick = () => swapGalleryOrder(index, index + 1);
+
+    list.appendChild(card);
+  });
+}
+
+async function swapGalleryOrder(indexA, indexB) {
+  const a = galleryItems[indexA];
+  const b = galleryItems[indexB];
+  try {
+    await Promise.all([
+      apiFetch(`/api/gallery/${a._id}`, { method: 'PUT', body: JSON.stringify({ order: b.order }) }),
+      apiFetch(`/api/gallery/${b._id}`, { method: 'PUT', body: JSON.stringify({ order: a.order }) }),
+    ]);
+    toast('Order updated');
+    loadGallery();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+document.getElementById('galleryRefresh').addEventListener('click', loadGallery);
+
+document.getElementById('addGalleryBtn').addEventListener('click', async () => {
+  const fileInput = document.getElementById('newGalleryFile');
+  const caption = document.getElementById('newGalleryCaption').value.trim();
+  const altText = document.getElementById('newGalleryAlt').value.trim();
+
+  if (!fileInput.files.length) {
+    toast('Please choose an image file', 'error');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('image', fileInput.files[0]);
+  if (caption) formData.append('caption', caption);
+  if (altText) formData.append('altText', altText);
+
+  try {
+    await apiFetch('/api/gallery', { method: 'POST', body: formData });
+    toast('Image added');
+    fileInput.value = '';
+    document.getElementById('newGalleryCaption').value = '';
+    document.getElementById('newGalleryAlt').value = '';
+    loadGallery();
   } catch (err) {
     toast(err.message, 'error');
   }

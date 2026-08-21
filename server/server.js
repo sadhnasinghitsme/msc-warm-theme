@@ -15,6 +15,7 @@ const contentRoutes = require('./routes/contentRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const pageMetaRoutes = require('./routes/pageMetaRoutes');
 const faqRoutes = require('./routes/faqRoutes');
+const galleryRoutes = require('./routes/galleryRoutes');
 
 connectDB();
 
@@ -53,6 +54,7 @@ app.use('/api/content', contentRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/page-meta', pageMetaRoutes);
 app.use('/api/faqs', faqRoutes);
+app.use('/api/gallery', galleryRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

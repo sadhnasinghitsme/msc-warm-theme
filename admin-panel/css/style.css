@@ -377,6 +377,40 @@ tr:last-child td { border-bottom: none; }
   color: var(--maroon-deep);
 }
 
+.gallery-grid-admin {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.gallery-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.gallery-card .gallery-thumb {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  display: block;
+  margin-bottom: 10px;
+  background: var(--bg);
+}
+
+.gallery-card label { margin-top: 8px; }
+.gallery-card label:first-of-type { margin-top: 0; }
+
+.gallery-card .content-key {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: ui-monospace, monospace;
+  margin-bottom: 8px;
+}
+
 @media (max-width: 720px) {
   .app-shell { flex-direction: column; }
   .sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: 10px; }
