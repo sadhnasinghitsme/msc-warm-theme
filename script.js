@@ -272,3 +272,145 @@
       console.warn('Dynamic content unavailable, using page defaults.', err);
     });
 })();
+
+/* ===== THEME SETTINGS: fill in [data-section-key] elements from the admin-editable theme settings API ===== */
+function escapeHtmlText(str){
+  return String(str == null ? '' : str).replace(/[&<>"']/g, function(c){
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+  });
+}
+
+(function(){
+  if(typeof CONFIG === 'undefined' || !CONFIG.API_BASE_URL) return;
+  var targets = Array.prototype.slice.call(document.querySelectorAll('[data-section-key]'));
+  var whyUsGrid = document.getElementById('whyUsCards');
+  var processTimeline = document.getElementById('processSteps');
+  var clinicalBadges = document.getElementById('clinicalBadges');
+  if(!targets.length && !whyUsGrid && !processTimeline && !clinicalBadges) return;
+
+  fetch(CONFIG.API_BASE_URL + '/api/theme-settings/public')
+    .then(function(res){
+      if(!res.ok) throw new Error('Failed to load theme settings (' + res.status + ')');
+      return res.json();
+    })
+    .then(function(map){
+      targets.forEach(function(el){
+        var sectionKey = el.getAttribute('data-section-key');
+        var section = map[sectionKey];
+        if(!section) return;
+
+        var field = el.getAttribute('data-field');
+        var extraField = el.getAttribute('data-extra-field');
+        var value = extraField ? (section.extra && section.extra[extraField]) : section[field];
+
+        if(value !== undefined && value !== null && value !== ''){
+          if(el.getAttribute('data-src-field') === 'true'){
+            el.src = value;
+          } else if(el.tagName === 'IMG'){
+            el.src = value;
+          } else {
+            el.textContent = value;
+          }
+        }
+
+        var hrefField = el.getAttribute('data-href-field');
+        if(hrefField){
+          var hrefValue = section[hrefField];
+          if(hrefValue) el.href = hrefValue;
+        }
+      });
+
+      if(whyUsGrid && map.whyUs && map.whyUs.items && map.whyUs.items.length){
+        whyUsGrid.innerHTML = map.whyUs.items.map(function(card){
+          return '<div class="feature-card"><img class="feature-card-img" src="' + escapeHtmlText(card.imageUrl) + '" alt="' + escapeHtmlText(card.title) + '" width="400" height="300" loading="lazy"><div class="feature-card-body"><h3>' + escapeHtmlText(card.title) + '</h3><p>' + escapeHtmlText(card.description) + '</p></div></div>';
+        }).join('');
+      }
+
+      if(processTimeline && map.process && map.process.items && map.process.items.length){
+        processTimeline.innerHTML = map.process.items.map(function(step, i){
+          return '<div class="tl-step"><div class="tl-num">' + (i + 1) + '</div><h3>' + escapeHtmlText(step.title) + '</h3><p>' + escapeHtmlText(step.description) + '</p></div>';
+        }).join('');
+      }
+
+      if(clinicalBadges && map.clinical && map.clinical.items && map.clinical.items.length){
+        clinicalBadges.innerHTML = map.clinical.items.map(function(badge){
+          return '<span class="chip">' + escapeHtmlText(badge.title) + '</span>';
+        }).join('');
+      }
+    })
+    .catch(function(err){
+      console.warn('Theme settings unavailable, using page defaults.', err);
+    });
+})();
+
+/* ===== PROGRAMS: rebuild the course-tabs section and eligibility table from the admin-editable programs API ===== */
+(function(){
+  if(typeof CONFIG === 'undefined' || !CONFIG.API_BASE_URL) return;
+  var tabLabels = document.getElementById('courseTabLabels');
+  var tabPanels = document.getElementById('courseTabPanels');
+  var courseTabs = document.getElementById('courseTabs');
+  var eligBody = document.getElementById('eligTableBody');
+  if(!tabLabels && !eligBody) return;
+
+  fetch(CONFIG.API_BASE_URL + '/api/programs/public')
+    .then(function(res){
+      if(!res.ok) throw new Error('Failed to load programs (' + res.status + ')');
+      return res.json();
+    })
+    .then(function(programs){
+      if(!programs || !programs.length) return;
+
+      if(courseTabs && tabLabels && tabPanels){
+        var radiosHtml = programs.map(function(p, i){
+          return '<input type="radio" name="tabs" id="t' + (i + 1) + '" class="tab-input"' + (i === 0 ? ' checked' : '') + '>';
+        }).join('');
+
+        var labelsHtml = programs.map(function(p, i){
+          return '<label for="t' + (i + 1) + '">' + escapeHtmlText(p.name.replace(/^MSc Medical\s*/i, '')) + '</label>';
+        }).join('');
+
+        var panelsHtml = programs.map(function(p, i){
+          var syllabus = (p.coreSyllabus || []).map(function(s){ return '<li>' + escapeHtmlText(s) + '</li>'; }).join('');
+          var career = (p.careerScope || []).map(function(s){ return '<li>' + escapeHtmlText(s) + '</li>'; }).join('');
+          return '<div class="tab-panel" id="p' + (i + 1) + '">'
+            + '<div class="tab-panel-media"><img class="course-tab-image" src="' + escapeHtmlText(p.imageUrl) + '" alt="' + escapeHtmlText(p.name) + '" loading="lazy"></div>'
+            + '<h3>' + escapeHtmlText(p.name) + '</h3>'
+            + '<p class="desc">' + escapeHtmlText(p.description) + '</p>'
+            + '<div class="course-meta-panel"><p><strong>Duration:</strong> ' + escapeHtmlText(p.duration) + '</p><p><strong>Eligibility:</strong> ' + escapeHtmlText(p.eligibility) + '</p></div>'
+            + '<h4 class="sub-head">Core Syllabus</h4><ul class="syllabus-list">' + syllabus + '</ul>'
+            + '<h4 class="sub-head">Career Scope</h4><ul class="career-list">' + career + '</ul>'
+            + '<div class="course-meta-panel"><p><strong>Primary Recruiters:</strong> ' + escapeHtmlText(p.primaryRecruiters) + '</p><p><strong>Average Starting Package:</strong> ' + escapeHtmlText(p.avgPackage) + '</p></div>'
+            + '<a href="#enquiry-form" class="btn btn-gold">Check Eligibility for ' + escapeHtmlText(p.name) + '</a>'
+            + '</div>';
+        }).join('');
+
+        var oldInputs = courseTabs.querySelectorAll('input.tab-input');
+        oldInputs.forEach(function(inp){ inp.remove(); });
+        courseTabs.insertAdjacentHTML('afterbegin', radiosHtml);
+        tabLabels.innerHTML = labelsHtml;
+        tabPanels.innerHTML = panelsHtml;
+
+        // The site's CSS only wires up #t1:checked~#p1 .. #t4:checked~#p4 (see
+        // style.css), so it breaks past 4 tabs. Drive visibility from JS
+        // instead so this keeps working no matter how many programs exist.
+        var radios = Array.prototype.slice.call(courseTabs.querySelectorAll('input.tab-input'));
+        var panels = Array.prototype.slice.call(tabPanels.querySelectorAll('.tab-panel'));
+        function syncPanels(){
+          radios.forEach(function(radio, i){
+            if(panels[i]) panels[i].style.display = radio.checked ? 'block' : 'none';
+          });
+        }
+        radios.forEach(function(radio){ radio.addEventListener('change', syncPanels); });
+        syncPanels();
+      }
+
+      if(eligBody){
+        eligBody.innerHTML = programs.map(function(p){
+          return '<tr><td>' + escapeHtmlText(p.name) + '</td><td>' + escapeHtmlText(p.eligibility) + '</td><td>' + escapeHtmlText(p.duration) + '</td></tr>';
+        }).join('');
+      }
+    })
+    .catch(function(err){
+      console.warn('Programs unavailable, using page defaults.', err);
+    });
+})();

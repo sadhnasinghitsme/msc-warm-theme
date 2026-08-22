@@ -9,19 +9,6 @@ const Content = require('../models/Content');
 
 const DEFAULTS = [
   {
-    key: 'hero.title',
-    label: 'Hero heading',
-    type: 'text',
-    value: 'MSc Medical Admissions 2026 — SKS International University, Mathura',
-  },
-  {
-    key: 'hero.desc',
-    label: 'Hero description paragraph',
-    type: 'richtext',
-    value:
-      "Build your career in Medical Anatomy, Physiology, Biochemistry, or Microbiology at SKS International University. Our MSc Medical programs follow the NMC's Competency-Based Medical Education (CBME) framework across three academic phases, combining foundational medical science with specialized, hands-on training. Applications for the 2026 batch are now open.",
-  },
-  {
     key: 'about.paragraph1',
     label: 'About section — paragraph 1',
     type: 'richtext',
@@ -34,24 +21,6 @@ const DEFAULTS = [
     type: 'richtext',
     value:
       'Students are taught by an experienced faculty of 350+ members and have access to more than 20 dedicated academic labs, a well-stocked central library, and full residential campus facilities.',
-  },
-  {
-    key: 'contact.phone',
-    label: 'Admission helpline phone number',
-    type: 'text',
-    value: '+91-9068569915',
-  },
-  {
-    key: 'contact.tollfree',
-    label: 'Toll-free number',
-    type: 'text',
-    value: '1800-889-0478',
-  },
-  {
-    key: 'contact.email',
-    label: 'Contact email address',
-    type: 'text',
-    value: 'contact@sksinternationaluniversity.ac.in',
   },
   {
     key: 'header.logo',

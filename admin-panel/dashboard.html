@@ -18,6 +18,8 @@
     <div class="nav-item" data-panel="seo">SEO / Meta Tags</div>
     <div class="nav-item" data-panel="faqs">FAQ Manager</div>
     <div class="nav-item" data-panel="gallery">Gallery</div>
+    <div class="nav-item" data-panel="theme">Theme Settings</div>
+    <div class="nav-item" data-panel="programs">Programs</div>
     <div class="nav-spacer"></div>
     <div class="nav-item" id="logoutBtn">Log Out</div>
   </aside>
@@ -167,6 +169,41 @@
         <label for="newGalleryAlt">Alt text (optional)</label>
         <input type="text" id="newGalleryAlt" placeholder="Describes the image for accessibility/SEO">
         <button class="btn btn-small" id="addGalleryBtn">Add Image</button>
+      </div>
+    </section>
+
+    <!-- THEME SETTINGS -->
+    <section class="panel" id="panel-theme">
+      <h1>Theme Settings</h1>
+      <p class="page-sub">
+        Edit homepage section content &mdash; no code changes needed. Sections marked "Live on site" appear immediately;
+        others are ready for when you add that section to the homepage.
+      </p>
+      <div class="toolbar">
+        <button class="btn btn-secondary btn-small" id="themeRefresh">Refresh</button>
+      </div>
+      <div class="content-list" id="themeList"></div>
+      <div class="loading-state" id="themeLoading">Loading...</div>
+    </section>
+
+    <!-- PROGRAMS -->
+    <section class="panel" id="panel-programs">
+      <h1>Programs</h1>
+      <p class="page-sub">
+        Manage the 4 MSc course cards shown in the "Choose Your MSc Medical Specialization" section.
+        The Eligibility &amp; Course Snapshot table on the homepage is generated automatically from this data.
+      </p>
+      <div class="toolbar">
+        <button class="btn btn-secondary btn-small" id="programRefresh">Refresh</button>
+      </div>
+      <div class="content-list" id="programList"></div>
+      <div class="empty-state" id="programEmpty" style="display:none;">No programs yet.</div>
+      <div class="loading-state" id="programLoading">Loading...</div>
+
+      <div class="new-content-form">
+        <h3>Add a new program</h3>
+        <div class="content-list" id="newProgramForm"></div>
+        <button class="btn btn-small" id="addProgramBtn" style="margin-top:12px;">Add Program</button>
       </div>
     </section>
 

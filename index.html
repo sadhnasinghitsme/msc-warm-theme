@@ -85,8 +85,8 @@
 
   <div class="hero-grid">
     <div>
-      <h1 class="hero-title" data-content-key="hero.title">MSc Medical Admissions 2026 &mdash; SKS International University, Mathura</h1>
-      <p class="hero-desc" data-content-key="hero.desc">Build your career in Medical Anatomy, Physiology, Biochemistry, or Microbiology at SKS International University. Our MSc Medical programs follow the NMC's Competency-Based Medical Education (CBME) framework across three academic phases, combining foundational medical science with specialized, hands-on training. Applications for the 2026 batch are now open.</p>
+      <h1 class="hero-title" data-section-key="hero" data-field="title">MSc Medical Admissions 2026 &mdash; SKS International University, Mathura</h1>
+      <p class="hero-desc" data-section-key="hero" data-field="description">Build your career in Medical Anatomy, Physiology, Biochemistry, or Microbiology at SKS International University. Our MSc Medical programs follow the NMC's Competency-Based Medical Education (CBME) framework across three academic phases, combining foundational medical science with specialized, hands-on training. Applications for the 2026 batch are now open.</p>
       <ul class="trust-list">
         <li><span class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l6 6L20 6"/></svg></span>CBME Based Curriculum </li>
         <li><span class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.05 7-12A7 7 0 0 0 5 10c0 4.95 7 12 7 12z"/><circle cx="12" cy="10" r="2.2"/></svg></span>50-Acre Campus in Mathura</li>
@@ -96,7 +96,7 @@
         <li><span class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></span>Simple Online Application Process</li>
       </ul>
       <div class="hero-cta">
-        <a href="#enquiry-form" class="btn btn-gold">Check My Eligibility</a>
+        <a href="#enquiry-form" class="btn btn-gold" data-section-key="hero" data-field="buttonText" data-href-field="buttonLink">Check My Eligibility</a>
         <p class="fine">Limited seats for the 2026 batch. No enquiry fee. Your details remain confidential.</p>
       </div>
     </div>
@@ -143,10 +143,10 @@
 <!-- ============ WHY CHOOSE ============ -->
 <section class="section alt">
   <div class="section-head center">
-    <div class="eyebrow">Why SKS</div>
-    <h2>Why Choose SKS International University</h2>
+    <div class="eyebrow" data-section-key="whyUs" data-field="subtitle">Why SKS</div>
+    <h2 data-section-key="whyUs" data-field="title">Why Choose SKS International University</h2>
   </div>
-  <div class="feature-grid">
+  <div class="feature-grid" id="whyUsCards">
     <div class="feature-card"><img class="feature-card-img" src="images/why-choose/lab-training-new.jpg" alt="Students in lab coats conducting a hands-on practical session in a science lab" width="400" height="300" loading="lazy"><div class="feature-card-body"><h3>Dedicated Subject Labs</h3><p>Separate, well-equipped laboratories for Microbiology, Biochemistry, Anatomy, Physiology give students focused, hands-on training in their chosen specialization.</p></div></div>
     <div class="feature-card"><img class="feature-card-img" src="images/why-choose/experienced-faculty-lecture.jpeg" alt="Faculty addressing students in the SKS International University lecture hall" width="400" height="300" loading="lazy"><div class="feature-card-body"><h3>Experienced Faculty</h3><p>Learn from a faculty of 350+ academicians and researchers with strong subject expertise across all science departments.</p></div></div>
     <div class="feature-card"><img class="feature-card-img" src="images/why-choose/residential-campus.webp" alt="SKS Hospital Medical College and Research Centre Girls Hostel building exterior" width="400" height="300" loading="lazy"><div class="feature-card-body"><h3>Full Residential Campus</h3><p>Boys' and girls' hostels, a cafeteria, gymnasium, bank, and 24/7 security are all available on campus, so students can focus on their studies without commuting concerns.</p></div></div>
@@ -158,11 +158,11 @@
 <!-- ============ HOSPITAL USP ============ -->
 <section class="section" id="hospital">
   <div class="section-head center">
-    <div class="eyebrow">Clinical Training</div>
-    <h2>Train Inside a Real, Working Hospital &mdash; Where Your Phase-I Syllabus Comes to Life</h2>
-    <p>What sets SKS International University apart is direct access to a real, functioning hospital. SKS Hospital Medical College &amp; Research Centre, on the same campus, is a 950-bed multi-specialty hospital with active OPD, IPD, ICU, NICU, PICU, and Emergency &amp; Trauma departments. Since Phase-I of every MSc Medical specialization follows the same foundational Anatomy, Physiology, and Biochemistry syllabus used in NMC's MBBS CBME curriculum, studying alongside a real hospital environment gives students clinical context most postgraduate science programs can't offer.</p>
+    <div class="eyebrow" data-section-key="clinical" data-field="subtitle">Clinical Training</div>
+    <h2 data-section-key="clinical" data-field="title">Train Inside a Real, Working Hospital &mdash; Where Your Phase-I Syllabus Comes to Life</h2>
+    <p data-section-key="clinical" data-field="description">What sets SKS International University apart is direct access to a real, functioning hospital. SKS Hospital Medical College &amp; Research Centre, on the same campus, is a 950-bed multi-specialty hospital with active OPD, IPD, ICU, NICU, PICU, and Emergency &amp; Trauma departments. Since Phase-I of every MSc Medical specialization follows the same foundational Anatomy, Physiology, and Biochemistry syllabus used in NMC's MBBS CBME curriculum, studying alongside a real hospital environment gives students clinical context most postgraduate science programs can't offer.</p>
   </div>
-  <div class="chip-row">
+  <div class="chip-row" id="clinicalBadges">
     <span class="chip">950-Bed Multi-Specialty Hospital</span>
     <span class="chip">OPD &amp; IPD Departments (overall multi-speciality)</span>
     <span class="chip">ICU, NICU &amp; PICU Units</span>
@@ -215,18 +215,18 @@
     <div class="eyebrow">Programs</div>
     <h2>Choose Your MSc Medical Specialization</h2>
   </div>
-  <div class="course-tabs">
+  <div class="course-tabs" id="courseTabs">
     <input type="radio" name="tabs" id="t1" class="tab-input" checked>
     <input type="radio" name="tabs" id="t2" class="tab-input">
     <input type="radio" name="tabs" id="t3" class="tab-input">
     <input type="radio" name="tabs" id="t4" class="tab-input">
-    <div class="tab-labels">
+    <div class="tab-labels" id="courseTabLabels">
       <label for="t1">Microbiology</label>
       <label for="t2">Biochemistry</label>
       <label for="t3">Anatomy</label>
       <label for="t4">Physiology</label>
     </div>
-    <div class="tab-panels">
+    <div class="tab-panels" id="courseTabPanels">
       <div class="tab-panel" id="p1">
         <div class="tab-panel-media"><img class="course-tab-image" src="images/course-tabs/microbiology.webp" alt="Students in lab coats conducting a hands-on practical session in the science lab" loading="lazy"></div>
         <h3>MSc Medical Microbiology</h3>
@@ -306,10 +306,10 @@
 <!-- ============ ADMISSION PROCESS ============ -->
 <section class="section alt">
   <div class="section-head center">
-    <div class="eyebrow">Process</div>
-    <h2>How to Apply &mdash; Admission Process</h2>
+    <div class="eyebrow" data-section-key="process" data-field="subtitle">Process</div>
+    <h2 data-section-key="process" data-field="title">How to Apply &mdash; Admission Process</h2>
   </div>
-  <div class="timeline">
+  <div class="timeline" id="processSteps">
     <div class="tl-step"><div class="tl-num">1</div><h3>Fill the Enquiry Form</h3><p>Share your basic details and let us know which MSc specialization you're interested in.</p></div>
     <div class="tl-step"><div class="tl-num">2</div><h3>Get a Counsellor Call</h3><p>Our admission counsellor will call you within 15 minutes to verify your eligibility and answer your questions.</p></div>
     <div class="tl-step"><div class="tl-num">3</div><h3>Document Verification</h3><p>Upload your mark sheets and ID proof online for verification.</p></div>
@@ -327,10 +327,12 @@
   <p class="elig-note">All four MSc Medical specializations follow the same core eligibility and duration structure: a qualifying Bachelor's degree with a minimum of 55% marks, and a 3-year program spanning Phase-I, Phase-II, and Phase-III. Eligible qualifying degrees include B.Sc. (Biological Sciences), MBBS, BDS, BAMS, BHMS, BPT, BOT, B.Pharma, B.Sc. Nursing, B.Sc. Biotech, B.V.Sc, and B.Sc. MLT.</p>
   <table class="elig-table">
     <tr><th>Course</th><th>Eligibility</th><th>Duration</th></tr>
+    <tbody id="eligTableBody">
     <tr><td>MSc Medical Anatomy</td><td>Qualifying degree (see list above), 55%+</td><td>3 Years (Phase I&ndash;III)</td></tr>
     <tr><td>MSc Medical Physiology</td><td>Qualifying degree (see list above), 55%+</td><td>3 Years (Phase I&ndash;III)</td></tr>
     <tr><td>MSc Medical Biochemistry</td><td>Qualifying degree (see list above), 55%+</td><td>3 Years (Phase I&ndash;III)</td></tr>
     <tr><td>MSc Medical Microbiology</td><td>Qualifying degree (see list above), 55%+</td><td>3 Years (Phase I&ndash;III)</td></tr>
+    </tbody>
   </table>
   <div style="text-align:center;"><a href="#enquiry-form" class="btn btn-outline">Get Exact Fee Details</a></div>
 </section>
@@ -433,8 +435,8 @@
 <!-- ============ FAQ ============ -->
 <section class="section alt">
   <div class="section-head center">
-    <div class="eyebrow">Questions</div>
-    <h2>Frequently Asked Questions</h2>
+    <div class="eyebrow" data-section-key="faq" data-field="subtitle">Questions</div>
+    <h2 data-section-key="faq" data-field="title">Frequently Asked Questions</h2>
   </div>
   <!--
     Everything between FAQ:START and FAQ:END (the visible list AND the
@@ -511,7 +513,7 @@
       </form>
     </div>
     <div class="enquiry-map">
-      <iframe src="https://www.google.com/maps?q=SKS+International+University,+NH-2,+Village+Chaumuhan,+Tehsil+Chhata,+Mathura,+Uttar+Pradesh&output=embed" width="100%" height="100%" style="border:0; min-height:400px;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="SKS International University location map"></iframe>
+      <iframe src="https://www.google.com/maps?q=SKS+International+University,+NH-2,+Village+Chaumuhan,+Tehsil+Chhata,+Mathura,+Uttar+Pradesh&output=embed" data-section-key="contact" data-extra-field="mapLink" data-src-field="true" width="100%" height="100%" style="border:0; min-height:400px;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="SKS International University location map"></iframe>
     </div>
   </div>
 </section>
@@ -521,11 +523,12 @@
   <div class="footer-grid">
     <div>
       <h5>SKS International University</h5>
-      <p>A Unit of SKS Group, Mathura<br>21 Mile Stone, NH-2, Village Chaumuhan, Tehsil Chhata, Mathura &ndash; 281406, Uttar Pradesh</p>
+      <p style="white-space:pre-line;" data-section-key="contact" data-extra-field="address">A Unit of SKS Group, Mathura
+21 Mile Stone, NH-2, Village Chaumuhan, Tehsil Chhata, Mathura &ndash; 281406, Uttar Pradesh</p>
     </div>
     <div>
       <h5>Contact</h5>
-      <p>Phone: <span data-content-key="contact.phone">+91-9068569915</span><br>Toll-Free: <span data-content-key="contact.tollfree">1800-889-0478</span><br>Email: <span data-content-key="contact.email">contact@sksinternationaluniversity.ac.in</span></p>
+      <p>Phone: <span data-section-key="contact" data-extra-field="phone">+91-9068569915</span><br>Toll-Free: <span data-section-key="contact" data-extra-field="tollfree">1800-889-0478</span><br>Email: <span data-section-key="contact" data-extra-field="email">contact@sksinternationaluniversity.ac.in</span></p>
     </div>
   </div>
   <div class="footer-bottom">&copy; 2026 SKS International University. All rights reserved.</div>

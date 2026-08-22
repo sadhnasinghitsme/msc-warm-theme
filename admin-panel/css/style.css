@@ -411,6 +411,42 @@ tr:last-child td { border-bottom: none; }
   margin-bottom: 8px;
 }
 
+.theme-edit-form {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.theme-extra-fields {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+}
+
+.theme-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 8px 0 10px;
+}
+
+.theme-item-row {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.theme-item-row input,
+.theme-item-row textarea {
+  margin-bottom: 8px;
+}
+
+.theme-item-row input:last-of-type,
+.theme-item-row textarea:last-of-type {
+  margin-bottom: 10px;
+}
+
 @media (max-width: 720px) {
   .app-shell { flex-direction: column; }
   .sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: 10px; }

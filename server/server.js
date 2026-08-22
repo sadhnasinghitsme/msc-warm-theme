@@ -16,6 +16,8 @@ const uploadRoutes = require('./routes/uploadRoutes');
 const pageMetaRoutes = require('./routes/pageMetaRoutes');
 const faqRoutes = require('./routes/faqRoutes');
 const galleryRoutes = require('./routes/galleryRoutes');
+const themeSettingsRoutes = require('./routes/themeSettingsRoutes');
+const programRoutes = require('./routes/programRoutes');
 
 connectDB();
 
@@ -55,6 +57,8 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/page-meta', pageMetaRoutes);
 app.use('/api/faqs', faqRoutes);
 app.use('/api/gallery', galleryRoutes);
+app.use('/api/theme-settings', themeSettingsRoutes);
+app.use('/api/programs', programRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

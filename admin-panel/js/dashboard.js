@@ -30,6 +30,8 @@ document.querySelectorAll('.nav-item[data-panel]').forEach((item) => {
     if (item.dataset.panel === 'seo' && !seoLoaded) loadSeo();
     if (item.dataset.panel === 'faqs' && !faqsLoaded) loadFaqs();
     if (item.dataset.panel === 'gallery' && !galleryLoaded) loadGallery();
+    if (item.dataset.panel === 'theme' && !themeLoaded) loadTheme();
+    if (item.dataset.panel === 'programs' && !programsLoaded) loadPrograms();
   });
 });
 
@@ -739,6 +741,398 @@ document.getElementById('addGalleryBtn').addEventListener('click', async () => {
     loadGallery();
   } catch (err) {
     toast(err.message, 'error');
+  }
+});
+
+// ============================================================
+// THEME SETTINGS
+// ============================================================
+// itemsShape: null | 'card' (imageUrl+title+description) | 'step' (title+description) | 'badge' (title only)
+// extraFields: null | [{ key, label, type }] rendered/read from item.extra
+const THEME_SECTIONS = [
+  { key: 'hero', label: 'Hero', live: true, hint: 'Homepage hero heading, description, and CTA button.', itemsShape: null, extraFields: null },
+  { key: 'whyUs', label: 'Why Choose Us', live: true, hint: 'Eyebrow + heading, plus the 5 feature cards below it.', itemsShape: 'card', extraFields: null },
+  { key: 'faq', label: 'FAQ Section Intro', live: true, hint: 'Eyebrow + heading above the FAQ list. The questions/answers themselves are in FAQ Manager.', itemsShape: null, extraFields: null },
+  { key: 'stats', label: 'Stats', live: false, hint: 'Not yet wired to the live site — there’s no existing stats heading to hook into.', itemsShape: null, extraFields: null },
+  { key: 'process', label: 'Admission Process', live: true, hint: 'Eyebrow + heading, plus the 5-step "How to Apply" timeline.', itemsShape: 'step', extraFields: null },
+  { key: 'clinical', label: 'Clinical Training', live: true, hint: 'Heading, description, and the hospital stat badges.', itemsShape: 'badge', extraFields: null },
+  {
+    key: 'contact', label: 'Contact & Footer', live: true, hint: 'Phone, toll-free, email, address, and the map embed shown in the footer.',
+    itemsShape: null,
+    extraFields: [
+      { key: 'phone', label: 'Admission Helpline' },
+      { key: 'tollfree', label: 'Toll-Free Number' },
+      { key: 'email', label: 'Email Address' },
+      { key: 'address', label: 'Address', type: 'textarea' },
+      { key: 'mapLink', label: 'Map Embed URL', hint: 'The src of a Google Maps embed link.' },
+    ],
+  },
+];
+
+const ITEM_SHAPE_FIELDS = {
+  card: [
+    { key: 'imageUrl', label: 'Image URL', placeholder: 'images/why-choose/example.jpg' },
+    { key: 'title', label: 'Title', placeholder: 'Card title' },
+    { key: 'description', label: 'Description', type: 'textarea', placeholder: 'Card description' },
+  ],
+  step: [
+    { key: 'title', label: 'Step Title', placeholder: 'e.g. Fill the Enquiry Form' },
+    { key: 'description', label: 'Step Description', type: 'textarea', placeholder: 'What happens in this step' },
+  ],
+  badge: [
+    { key: 'title', label: 'Badge Text', placeholder: 'e.g. 950-Bed Multi-Specialty Hospital' },
+  ],
+};
+
+function buildItemRowHtml(shape, data) {
+  const fields = ITEM_SHAPE_FIELDS[shape];
+  const fieldsHtml = fields
+    .map((f) => {
+      const value = escapeHtml(data[f.key] || '');
+      return f.type === 'textarea'
+        ? `<textarea rows="2" data-item-field="${f.key}" placeholder="${escapeHtml(f.placeholder)}">${value}</textarea>`
+        : `<input type="text" data-item-field="${f.key}" value="${value}" placeholder="${escapeHtml(f.placeholder)}">`;
+    })
+    .join('');
+  return `<div class="theme-item-row">${fieldsHtml}<button type="button" class="btn btn-danger btn-small" data-action="remove-item">Remove</button></div>`;
+}
+
+function readItemRow(shape, rowEl) {
+  const fields = ITEM_SHAPE_FIELDS[shape];
+  const obj = {};
+  fields.forEach((f) => {
+    obj[f.key] = rowEl.querySelector(`[data-item-field="${f.key}"]`).value.trim();
+  });
+  return obj;
+}
+
+let themeLoaded = false;
+let themeSectionsByKey = {};
+
+async function loadTheme() {
+  document.getElementById('themeLoading').style.display = 'block';
+  try {
+    const items = await apiFetch('/api/theme-settings');
+    themeLoaded = true;
+    themeSectionsByKey = {};
+    items.forEach((item) => {
+      themeSectionsByKey[item.sectionKey] = item;
+    });
+    renderTheme();
+  } catch (err) {
+    toast(err.message, 'error');
+  } finally {
+    document.getElementById('themeLoading').style.display = 'none';
+  }
+}
+
+function renderTheme() {
+  const list = document.getElementById('themeList');
+  list.innerHTML = '';
+
+  THEME_SECTIONS.forEach((meta) => {
+    const item = themeSectionsByKey[meta.key] || {};
+    const card = document.createElement('div');
+    card.className = 'content-card';
+
+    card.innerHTML = `
+      <div class="content-head">
+        <div>
+          <strong>${escapeHtml(meta.label)}</strong>
+          <div class="content-key">${meta.live ? 'Live on site' : 'Not yet wired to the site'} &middot; ${escapeHtml(meta.hint)}</div>
+        </div>
+        <button class="btn btn-secondary btn-small" data-action="toggle-edit">Edit</button>
+      </div>
+
+      <div class="theme-edit-form" style="display:none;">
+        <label>Title</label>
+        <input type="text" data-field="title" value="${escapeHtml(item.title || '')}">
+        <label>Subtitle</label>
+        <input type="text" data-field="subtitle" value="${escapeHtml(item.subtitle || '')}">
+        <label>Description</label>
+        <textarea rows="3" data-field="description">${escapeHtml(item.description || '')}</textarea>
+        <label>Image</label>
+        <input type="file" data-field="imageFile" accept="image/*">
+        <input type="hidden" data-field="imageUrl" value="${escapeHtml(item.imageUrl || '')}">
+        ${item.imageUrl ? `<img class="image-preview" src="${escapeHtml(item.imageUrl)}" alt="">` : ''}
+        <label>Button Text</label>
+        <input type="text" data-field="buttonText" value="${escapeHtml(item.buttonText || '')}">
+        <label>Button Link</label>
+        <input type="text" data-field="buttonLink" value="${escapeHtml(item.buttonLink || '')}" placeholder="#enquiry-form or https://...">
+
+        ${meta.extraFields ? `
+          <div class="theme-extra-fields">
+            ${meta.extraFields.map((f) => `
+              <label>${escapeHtml(f.label)}${f.hint ? ` <span class="content-key">(${escapeHtml(f.hint)})</span>` : ''}</label>
+              ${f.type === 'textarea'
+                ? `<textarea rows="2" data-extra-field="${f.key}">${escapeHtml((item.extra && item.extra[f.key]) || '')}</textarea>`
+                : `<input type="text" data-extra-field="${f.key}" value="${escapeHtml((item.extra && item.extra[f.key]) || '')}">`}
+            `).join('')}
+          </div>
+        ` : ''}
+
+        ${meta.itemsShape ? `
+          <label>${escapeHtml(meta.label)} Items</label>
+          <div class="theme-items-list" data-items-shape="${meta.itemsShape}">
+            ${(item.items || []).map((it) => buildItemRowHtml(meta.itemsShape, it)).join('')}
+          </div>
+          <button type="button" class="btn btn-secondary btn-small" data-action="add-item">+ Add Item</button>
+        ` : ''}
+
+        <div class="row-actions">
+          <button class="btn btn-small" data-action="save">Save</button>
+        </div>
+      </div>
+    `;
+
+    const form = card.querySelector('.theme-edit-form');
+    card.querySelector('[data-action="toggle-edit"]').onclick = () => {
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    };
+
+    const itemsList = card.querySelector('.theme-items-list');
+    function wireRemoveButtons() {
+      itemsList.querySelectorAll('[data-action="remove-item"]').forEach((btn) => {
+        btn.onclick = () => btn.closest('.theme-item-row').remove();
+      });
+    }
+    if (itemsList) {
+      wireRemoveButtons();
+      card.querySelector('[data-action="add-item"]').onclick = () => {
+        itemsList.insertAdjacentHTML('beforeend', buildItemRowHtml(meta.itemsShape, {}));
+        wireRemoveButtons();
+      };
+    }
+
+    card.querySelector('[data-action="save"]').onclick = async () => {
+      const saveBtn = card.querySelector('[data-action="save"]');
+      saveBtn.disabled = true;
+      try {
+        let imageUrl = card.querySelector('[data-field="imageUrl"]').value;
+        const fileInput = card.querySelector('[data-field="imageFile"]');
+
+        if (fileInput.files.length) {
+          const formData = new FormData();
+          formData.append('image', fileInput.files[0]);
+          const uploaded = await apiFetch('/api/upload', { method: 'POST', body: formData });
+          imageUrl = uploaded.url;
+        }
+
+        const body = {
+          title: card.querySelector('[data-field="title"]').value.trim(),
+          subtitle: card.querySelector('[data-field="subtitle"]').value.trim(),
+          description: card.querySelector('[data-field="description"]').value.trim(),
+          imageUrl,
+          buttonText: card.querySelector('[data-field="buttonText"]').value.trim(),
+          buttonLink: card.querySelector('[data-field="buttonLink"]').value.trim(),
+        };
+
+        if (meta.extraFields) {
+          body.extra = {};
+          meta.extraFields.forEach((f) => {
+            body.extra[f.key] = card.querySelector(`[data-extra-field="${f.key}"]`).value.trim();
+          });
+        }
+
+        if (meta.itemsShape) {
+          body.items = Array.from(itemsList.querySelectorAll('.theme-item-row')).map((row) =>
+            readItemRow(meta.itemsShape, row)
+          );
+        }
+
+        await apiFetch(`/api/theme-settings/${meta.key}`, { method: 'PUT', body: JSON.stringify(body) });
+        toast(`${meta.label} saved`);
+        loadTheme();
+      } catch (err) {
+        toast(err.message, 'error');
+      } finally {
+        saveBtn.disabled = false;
+      }
+    };
+
+    list.appendChild(card);
+  });
+}
+
+document.getElementById('themeRefresh').addEventListener('click', loadTheme);
+
+// ============================================================
+// PROGRAMS
+// ============================================================
+let programsLoaded = false;
+let programItems = [];
+
+function programFieldsHtml(item) {
+  item = item || {};
+  return `
+    <label>Course Name</label>
+    <input type="text" data-field="name" value="${escapeHtml(item.name || '')}" placeholder="e.g. MSc Medical Microbiology">
+    <label>Description</label>
+    <textarea rows="3" data-field="description" placeholder="Short program overview">${escapeHtml(item.description || '')}</textarea>
+    <label>Duration</label>
+    <input type="text" data-field="duration" value="${escapeHtml(item.duration || '')}" placeholder="e.g. 3 Academic Years (Phase I, II & III)">
+    <label>Eligibility</label>
+    <textarea rows="2" data-field="eligibility" placeholder="Eligibility text">${escapeHtml(item.eligibility || '')}</textarea>
+    <label>Core Syllabus <span class="content-key">(one item per line)</span></label>
+    <textarea rows="4" data-field="coreSyllabus">${escapeHtml((item.coreSyllabus || []).join('\n'))}</textarea>
+    <label>Career Scope <span class="content-key">(one item per line)</span></label>
+    <textarea rows="4" data-field="careerScope">${escapeHtml((item.careerScope || []).join('\n'))}</textarea>
+    <label>Primary Recruiters</label>
+    <input type="text" data-field="primaryRecruiters" value="${escapeHtml(item.primaryRecruiters || '')}">
+    <label>Average Starting Package</label>
+    <input type="text" data-field="avgPackage" value="${escapeHtml(item.avgPackage || '')}" placeholder="e.g. INR 4.5 – 20 LPA">
+    <label>Image</label>
+    <input type="file" data-field="imageFile" accept="image/*">
+    <input type="hidden" data-field="imageUrl" value="${escapeHtml(item.imageUrl || '')}">
+    ${item.imageUrl ? `<img class="image-preview" src="${escapeHtml(item.imageUrl)}" alt="">` : ''}
+    <label class="checkbox-label"><input type="checkbox" data-field="isActive" ${item.isActive === false ? '' : 'checked'}> Active (shown on the live site)</label>
+  `;
+}
+
+async function readProgramFields(container) {
+  let imageUrl = container.querySelector('[data-field="imageUrl"]').value;
+  const fileInput = container.querySelector('[data-field="imageFile"]');
+
+  if (fileInput.files.length) {
+    const formData = new FormData();
+    formData.append('image', fileInput.files[0]);
+    const uploaded = await apiFetch('/api/upload', { method: 'POST', body: formData });
+    imageUrl = uploaded.url;
+  }
+
+  const splitLines = (val) => val.split('\n').map((s) => s.trim()).filter(Boolean);
+
+  return {
+    name: container.querySelector('[data-field="name"]').value.trim(),
+    description: container.querySelector('[data-field="description"]').value.trim(),
+    duration: container.querySelector('[data-field="duration"]').value.trim(),
+    eligibility: container.querySelector('[data-field="eligibility"]').value.trim(),
+    coreSyllabus: splitLines(container.querySelector('[data-field="coreSyllabus"]').value),
+    careerScope: splitLines(container.querySelector('[data-field="careerScope"]').value),
+    primaryRecruiters: container.querySelector('[data-field="primaryRecruiters"]').value.trim(),
+    avgPackage: container.querySelector('[data-field="avgPackage"]').value.trim(),
+    imageUrl,
+    isActive: container.querySelector('[data-field="isActive"]').checked,
+  };
+}
+
+async function loadPrograms() {
+  document.getElementById('programLoading').style.display = 'block';
+  document.getElementById('programEmpty').style.display = 'none';
+  try {
+    programItems = await apiFetch('/api/programs');
+    programsLoaded = true;
+    renderPrograms();
+  } catch (err) {
+    toast(err.message, 'error');
+  } finally {
+    document.getElementById('programLoading').style.display = 'none';
+  }
+}
+
+function renderPrograms() {
+  const list = document.getElementById('programList');
+  list.innerHTML = '';
+
+  if (!programItems.length) {
+    document.getElementById('programEmpty').style.display = 'block';
+  }
+
+  programItems.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'content-card';
+    card.innerHTML = `
+      <div class="content-head">
+        <div>
+          <strong>${escapeHtml(item.name)}</strong>
+          <div class="content-key">Order: ${item.order} &middot; ${item.isActive ? 'Active' : 'Inactive'}</div>
+        </div>
+        <div class="reorder-buttons">
+          <button class="btn btn-secondary btn-small" data-action="up" ${index === 0 ? 'disabled' : ''} title="Move up">&uarr;</button>
+          <button class="btn btn-secondary btn-small" data-action="down" ${index === programItems.length - 1 ? 'disabled' : ''} title="Move down">&darr;</button>
+        </div>
+      </div>
+      ${programFieldsHtml(item)}
+      <div class="row-actions">
+        <button class="btn btn-small" data-action="save">Save</button>
+        <button class="btn btn-danger btn-small" data-action="delete">Delete</button>
+      </div>
+    `;
+
+    card.querySelector('[data-action="save"]').onclick = async () => {
+      const saveBtn = card.querySelector('[data-action="save"]');
+      saveBtn.disabled = true;
+      try {
+        const body = await readProgramFields(card);
+        await apiFetch(`/api/programs/${item._id}`, { method: 'PATCH', body: JSON.stringify(body) });
+        toast('Program saved');
+        loadPrograms();
+      } catch (err) {
+        toast(err.message, 'error');
+      } finally {
+        saveBtn.disabled = false;
+      }
+    };
+
+    card.querySelector('[data-action="delete"]').onclick = async () => {
+      if (!confirm(`Delete "${item.name}"?`)) return;
+      try {
+        await apiFetch(`/api/programs/${item._id}`, { method: 'DELETE' });
+        toast('Program deleted');
+        loadPrograms();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    };
+
+    const upBtn = card.querySelector('[data-action="up"]');
+    const downBtn = card.querySelector('[data-action="down"]');
+    if (!upBtn.disabled) upBtn.onclick = () => swapProgramOrder(index, index - 1);
+    if (!downBtn.disabled) downBtn.onclick = () => swapProgramOrder(index, index + 1);
+
+    list.appendChild(card);
+  });
+
+  document.getElementById('newProgramForm').innerHTML = programFieldsHtml({});
+}
+
+async function swapProgramOrder(indexA, indexB) {
+  const a = programItems[indexA];
+  const b = programItems[indexB];
+  try {
+    await Promise.all([
+      apiFetch(`/api/programs/${a._id}`, { method: 'PATCH', body: JSON.stringify({ order: b.order }) }),
+      apiFetch(`/api/programs/${b._id}`, { method: 'PATCH', body: JSON.stringify({ order: a.order }) }),
+    ]);
+    toast('Order updated');
+    loadPrograms();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+document.getElementById('programRefresh').addEventListener('click', loadPrograms);
+
+document.getElementById('addProgramBtn').addEventListener('click', async () => {
+  const addBtn = document.getElementById('addProgramBtn');
+  const container = document.getElementById('newProgramForm');
+  const name = container.querySelector('[data-field="name"]').value.trim();
+
+  if (!name) {
+    toast('Course name is required', 'error');
+    return;
+  }
+
+  addBtn.disabled = true;
+  try {
+    const body = await readProgramFields(container);
+    await apiFetch('/api/programs', { method: 'POST', body: JSON.stringify(body) });
+    toast('Program added');
+    loadPrograms();
+  } catch (err) {
+    toast(err.message, 'error');
+  } finally {
+    addBtn.disabled = false;
   }
 });
 
