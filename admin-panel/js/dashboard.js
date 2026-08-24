@@ -749,13 +749,14 @@ document.getElementById('addGalleryBtn').addEventListener('click', async () => {
 // ============================================================
 // itemsShape: null | 'card' (imageUrl+title+description) | 'step' (title+description) | 'badge' (title only)
 // extraFields: null | [{ key, label, type }] rendered/read from item.extra
+// icon/color: purely cosmetic — which chip icon + accent color the card uses
 const THEME_SECTIONS = [
-  { key: 'hero', label: 'Hero', live: true, hint: 'Homepage hero heading, description, and CTA button.', itemsShape: null, extraFields: null },
-  { key: 'whyUs', label: 'Why Choose Us', live: true, hint: 'Eyebrow + heading, plus the 5 feature cards below it.', itemsShape: 'card', extraFields: null },
-  { key: 'faq', label: 'FAQ Section Intro', live: true, hint: 'Eyebrow + heading above the FAQ list. The questions/answers themselves are in FAQ Manager.', itemsShape: null, extraFields: null },
-  { key: 'stats', label: 'Stats', live: false, hint: 'Not yet wired to the live site — there’s no existing stats heading to hook into.', itemsShape: null, extraFields: null },
-  { key: 'process', label: 'Admission Process', live: true, hint: 'Eyebrow + heading, plus the 5-step "How to Apply" timeline.', itemsShape: 'step', extraFields: null },
-  { key: 'clinical', label: 'Clinical Training', live: true, hint: 'Heading, description, and the hospital stat badges.', itemsShape: 'badge', extraFields: null },
+  { key: 'hero', label: 'Hero', live: true, hint: 'Homepage hero heading, description, and CTA button.', itemsShape: null, extraFields: null, icon: 'image', color: 'gold' },
+  { key: 'whyUs', label: 'Why Choose Us', live: true, hint: 'Eyebrow + heading, plus the 5 feature cards below it.', itemsShape: 'card', extraFields: null, icon: 'shield', color: 'maroon' },
+  { key: 'faq', label: 'FAQ Section Intro', live: true, hint: 'Eyebrow + heading above the FAQ list. The questions/answers themselves are in FAQ Manager.', itemsShape: null, extraFields: null, icon: 'help', color: 'blue' },
+  { key: 'stats', label: 'Stats', live: false, hint: 'Not yet wired to the live site — there’s no existing stats heading to hook into.', itemsShape: null, extraFields: null, icon: 'bar-chart', color: 'teal' },
+  { key: 'process', label: 'Admission Process', live: true, hint: 'Eyebrow + heading, plus the 5-step "How to Apply" timeline.', itemsShape: 'step', extraFields: null, icon: 'list', color: 'purple' },
+  { key: 'clinical', label: 'Clinical Training', live: true, hint: 'Heading, description, and the hospital stat badges.', itemsShape: 'badge', extraFields: null, icon: 'activity', color: 'rose' },
   {
     key: 'contact', label: 'Contact & Footer', live: true, hint: 'Phone, toll-free, email, address, and the map embed shown in the footer.',
     itemsShape: null,
@@ -766,8 +767,19 @@ const THEME_SECTIONS = [
       { key: 'address', label: 'Address', type: 'textarea' },
       { key: 'mapLink', label: 'Map Embed URL', hint: 'The src of a Google Maps embed link.' },
     ],
+    icon: 'phone', color: 'green',
   },
 ];
+
+const THEME_ICONS = {
+  image: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
+  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>',
+  help: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 2-3 4"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  'bar-chart': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>',
+  list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11"/><path d="M9 12h11"/><path d="M9 18h11"/><path d="M4 6l1 1 2-2"/><path d="M4 12l1 1 2-2"/><path d="M4 18l1 1 2-2"/></svg>',
+  activity: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+  phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>',
+};
 
 const ITEM_SHAPE_FIELDS = {
   card: [
@@ -833,128 +845,164 @@ function renderTheme() {
   THEME_SECTIONS.forEach((meta) => {
     const item = themeSectionsByKey[meta.key] || {};
     const card = document.createElement('div');
-    card.className = 'content-card';
+    card.className = 'theme-card';
 
     card.innerHTML = `
-      <div class="content-head">
-        <div>
-          <strong>${escapeHtml(meta.label)}</strong>
-          <div class="content-key">${meta.live ? 'Live on site' : 'Not yet wired to the site'} &middot; ${escapeHtml(meta.hint)}</div>
-        </div>
-        <button class="btn btn-secondary btn-small" data-action="toggle-edit">Edit</button>
+      <div class="theme-icon-chip ${meta.color}">${THEME_ICONS[meta.icon] || ''}</div>
+      <div class="theme-card-title">${escapeHtml(meta.label)}</div>
+      <div class="theme-status ${meta.live ? 'live' : 'pending'}">
+        <span class="dot"></span>${meta.live ? 'Live on site' : 'Not yet wired'}
       </div>
-
-      <div class="theme-edit-form" style="display:none;">
-        <label>Title</label>
-        <input type="text" data-field="title" value="${escapeHtml(item.title || '')}">
-        <label>Subtitle</label>
-        <input type="text" data-field="subtitle" value="${escapeHtml(item.subtitle || '')}">
-        <label>Description</label>
-        <textarea rows="3" data-field="description">${escapeHtml(item.description || '')}</textarea>
-        <label>Image</label>
-        <input type="file" data-field="imageFile" accept="image/*">
-        <input type="hidden" data-field="imageUrl" value="${escapeHtml(item.imageUrl || '')}">
-        ${item.imageUrl ? `<img class="image-preview" src="${escapeHtml(item.imageUrl)}" alt="">` : ''}
-        <label>Button Text</label>
-        <input type="text" data-field="buttonText" value="${escapeHtml(item.buttonText || '')}">
-        <label>Button Link</label>
-        <input type="text" data-field="buttonLink" value="${escapeHtml(item.buttonLink || '')}" placeholder="#enquiry-form or https://...">
-
-        ${meta.extraFields ? `
-          <div class="theme-extra-fields">
-            ${meta.extraFields.map((f) => `
-              <label>${escapeHtml(f.label)}${f.hint ? ` <span class="content-key">(${escapeHtml(f.hint)})</span>` : ''}</label>
-              ${f.type === 'textarea'
-                ? `<textarea rows="2" data-extra-field="${f.key}">${escapeHtml((item.extra && item.extra[f.key]) || '')}</textarea>`
-                : `<input type="text" data-extra-field="${f.key}" value="${escapeHtml((item.extra && item.extra[f.key]) || '')}">`}
-            `).join('')}
-          </div>
-        ` : ''}
-
-        ${meta.itemsShape ? `
-          <label>${escapeHtml(meta.label)} Items</label>
-          <div class="theme-items-list" data-items-shape="${meta.itemsShape}">
-            ${(item.items || []).map((it) => buildItemRowHtml(meta.itemsShape, it)).join('')}
-          </div>
-          <button type="button" class="btn btn-secondary btn-small" data-action="add-item">+ Add Item</button>
-        ` : ''}
-
-        <div class="row-actions">
-          <button class="btn btn-small" data-action="save">Save</button>
-        </div>
-      </div>
+      <p class="theme-card-desc">${escapeHtml(meta.hint)}</p>
+      <button class="btn btn-pill btn-small" data-action="edit">Edit</button>
     `;
 
-    const form = card.querySelector('.theme-edit-form');
-    card.querySelector('[data-action="toggle-edit"]').onclick = () => {
-      form.style.display = form.style.display === 'none' ? 'block' : 'none';
-    };
-
-    const itemsList = card.querySelector('.theme-items-list');
-    function wireRemoveButtons() {
-      itemsList.querySelectorAll('[data-action="remove-item"]').forEach((btn) => {
-        btn.onclick = () => btn.closest('.theme-item-row').remove();
-      });
-    }
-    if (itemsList) {
-      wireRemoveButtons();
-      card.querySelector('[data-action="add-item"]').onclick = () => {
-        itemsList.insertAdjacentHTML('beforeend', buildItemRowHtml(meta.itemsShape, {}));
-        wireRemoveButtons();
-      };
-    }
-
-    card.querySelector('[data-action="save"]').onclick = async () => {
-      const saveBtn = card.querySelector('[data-action="save"]');
-      saveBtn.disabled = true;
-      try {
-        let imageUrl = card.querySelector('[data-field="imageUrl"]').value;
-        const fileInput = card.querySelector('[data-field="imageFile"]');
-
-        if (fileInput.files.length) {
-          const formData = new FormData();
-          formData.append('image', fileInput.files[0]);
-          const uploaded = await apiFetch('/api/upload', { method: 'POST', body: formData });
-          imageUrl = uploaded.url;
-        }
-
-        const body = {
-          title: card.querySelector('[data-field="title"]').value.trim(),
-          subtitle: card.querySelector('[data-field="subtitle"]').value.trim(),
-          description: card.querySelector('[data-field="description"]').value.trim(),
-          imageUrl,
-          buttonText: card.querySelector('[data-field="buttonText"]').value.trim(),
-          buttonLink: card.querySelector('[data-field="buttonLink"]').value.trim(),
-        };
-
-        if (meta.extraFields) {
-          body.extra = {};
-          meta.extraFields.forEach((f) => {
-            body.extra[f.key] = card.querySelector(`[data-extra-field="${f.key}"]`).value.trim();
-          });
-        }
-
-        if (meta.itemsShape) {
-          body.items = Array.from(itemsList.querySelectorAll('.theme-item-row')).map((row) =>
-            readItemRow(meta.itemsShape, row)
-          );
-        }
-
-        await apiFetch(`/api/theme-settings/${meta.key}`, { method: 'PUT', body: JSON.stringify(body) });
-        toast(`${meta.label} saved`);
-        loadTheme();
-      } catch (err) {
-        toast(err.message, 'error');
-      } finally {
-        saveBtn.disabled = false;
-      }
-    };
+    card.querySelector('[data-action="edit"]').onclick = () => openThemeModal(meta, item);
 
     list.appendChild(card);
   });
 }
 
 document.getElementById('themeRefresh').addEventListener('click', loadTheme);
+
+// ---------- Theme Settings: shared edit modal ----------
+const themeModalOverlay = document.getElementById('themeModalOverlay');
+const themeModalEl = document.getElementById('themeModal');
+
+function closeThemeModal() {
+  themeModalOverlay.classList.add('hidden');
+  themeModalEl.innerHTML = '';
+}
+
+themeModalOverlay.addEventListener('click', (e) => {
+  if (e.target === themeModalOverlay) closeThemeModal();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !themeModalOverlay.classList.contains('hidden')) closeThemeModal();
+});
+
+function openThemeModal(meta, item) {
+  themeModalEl.innerHTML = `
+    <div class="modal-head">
+      <div>
+        <h2>${escapeHtml(meta.label)}</h2>
+        <p class="modal-sub">${meta.live ? 'Live on site' : 'Not yet wired to the site'} &middot; ${escapeHtml(meta.hint)}</p>
+      </div>
+      <button type="button" class="modal-close" data-action="close" aria-label="Close">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <label>Title</label>
+      <input type="text" data-field="title" value="${escapeHtml(item.title || '')}">
+      <label>Subtitle</label>
+      <input type="text" data-field="subtitle" value="${escapeHtml(item.subtitle || '')}">
+      <label>Description</label>
+      <textarea rows="3" data-field="description">${escapeHtml(item.description || '')}</textarea>
+      <label>Image</label>
+      <input type="file" data-field="imageFile" accept="image/*">
+      <input type="hidden" data-field="imageUrl" value="${escapeHtml(item.imageUrl || '')}">
+      ${item.imageUrl ? `<img class="image-preview" src="${escapeHtml(item.imageUrl)}" alt="">` : ''}
+      <label>Button Text</label>
+      <input type="text" data-field="buttonText" value="${escapeHtml(item.buttonText || '')}">
+      <label>Button Link</label>
+      <input type="text" data-field="buttonLink" value="${escapeHtml(item.buttonLink || '')}" placeholder="#enquiry-form or https://...">
+
+      ${meta.extraFields ? `
+        <div class="theme-extra-fields">
+          ${meta.extraFields.map((f) => `
+            <label>${escapeHtml(f.label)}${f.hint ? ` <span class="content-key">(${escapeHtml(f.hint)})</span>` : ''}</label>
+            ${f.type === 'textarea'
+              ? `<textarea rows="2" data-extra-field="${f.key}">${escapeHtml((item.extra && item.extra[f.key]) || '')}</textarea>`
+              : `<input type="text" data-extra-field="${f.key}" value="${escapeHtml((item.extra && item.extra[f.key]) || '')}">`}
+          `).join('')}
+        </div>
+      ` : ''}
+
+      ${meta.itemsShape ? `
+        <label>${escapeHtml(meta.label)} Items</label>
+        <div class="theme-items-list" data-items-shape="${meta.itemsShape}">
+          ${(item.items || []).map((it) => buildItemRowHtml(meta.itemsShape, it)).join('')}
+        </div>
+        <button type="button" class="btn btn-secondary btn-small" data-action="add-item">+ Add Item</button>
+      ` : ''}
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary btn-small" data-action="cancel">Cancel</button>
+      <button type="button" class="btn btn-pill btn-small" data-action="save">Save Changes</button>
+    </div>
+  `;
+
+  themeModalOverlay.classList.remove('hidden');
+
+  themeModalEl.querySelector('[data-action="close"]').onclick = closeThemeModal;
+  themeModalEl.querySelector('[data-action="cancel"]').onclick = closeThemeModal;
+
+  const itemsList = themeModalEl.querySelector('.theme-items-list');
+  function wireRemoveButtons() {
+    itemsList.querySelectorAll('[data-action="remove-item"]').forEach((btn) => {
+      btn.onclick = () => btn.closest('.theme-item-row').remove();
+    });
+  }
+  if (itemsList) {
+    wireRemoveButtons();
+    themeModalEl.querySelector('[data-action="add-item"]').onclick = () => {
+      itemsList.insertAdjacentHTML('beforeend', buildItemRowHtml(meta.itemsShape, {}));
+      wireRemoveButtons();
+    };
+  }
+
+  themeModalEl.querySelector('[data-action="save"]').onclick = async () => {
+    const saveBtn = themeModalEl.querySelector('[data-action="save"]');
+    const originalLabel = saveBtn.textContent;
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+
+    try {
+      let imageUrl = themeModalEl.querySelector('[data-field="imageUrl"]').value;
+      const fileInput = themeModalEl.querySelector('[data-field="imageFile"]');
+
+      if (fileInput.files.length) {
+        const formData = new FormData();
+        formData.append('image', fileInput.files[0]);
+        const uploaded = await apiFetch('/api/upload', { method: 'POST', body: formData });
+        imageUrl = uploaded.url;
+      }
+
+      const body = {
+        title: themeModalEl.querySelector('[data-field="title"]').value.trim(),
+        subtitle: themeModalEl.querySelector('[data-field="subtitle"]').value.trim(),
+        description: themeModalEl.querySelector('[data-field="description"]').value.trim(),
+        imageUrl,
+        buttonText: themeModalEl.querySelector('[data-field="buttonText"]').value.trim(),
+        buttonLink: themeModalEl.querySelector('[data-field="buttonLink"]').value.trim(),
+      };
+
+      if (meta.extraFields) {
+        body.extra = {};
+        meta.extraFields.forEach((f) => {
+          body.extra[f.key] = themeModalEl.querySelector(`[data-extra-field="${f.key}"]`).value.trim();
+        });
+      }
+
+      if (meta.itemsShape) {
+        body.items = Array.from(itemsList.querySelectorAll('.theme-item-row')).map((row) =>
+          readItemRow(meta.itemsShape, row)
+        );
+      }
+
+      await apiFetch(`/api/theme-settings/${meta.key}`, { method: 'PUT', body: JSON.stringify(body) });
+      toast(`${meta.label} saved`);
+      closeThemeModal();
+      loadTheme();
+    } catch (err) {
+      toast(err.message, 'error');
+      saveBtn.disabled = false;
+      saveBtn.textContent = originalLabel;
+    }
+  };
+}
 
 // ============================================================
 // PROGRAMS
@@ -1034,43 +1082,49 @@ function renderPrograms() {
   const list = document.getElementById('programList');
   list.innerHTML = '';
 
+  document.getElementById('programCount').textContent = programItems.length;
+
   if (!programItems.length) {
     document.getElementById('programEmpty').style.display = 'block';
   }
 
   programItems.forEach((item, index) => {
     const card = document.createElement('div');
-    card.className = 'content-card';
+    card.className = 'program-summary-card';
     card.innerHTML = `
-      <div class="content-head">
+      <div class="program-card-top">
         <div>
-          <strong>${escapeHtml(item.name)}</strong>
-          <div class="content-key">Order: ${item.order} &middot; ${item.isActive ? 'Active' : 'Inactive'}</div>
+          <div class="program-card-title">${escapeHtml(item.name)}</div>
+          <div class="program-card-meta">Order: ${item.order} &middot; <span class="status-pill ${item.isActive ? 'active' : 'inactive'}">${item.isActive ? 'Active' : 'Inactive'}</span></div>
         </div>
         <div class="reorder-buttons">
           <button class="btn btn-secondary btn-small" data-action="up" ${index === 0 ? 'disabled' : ''} title="Move up">&uarr;</button>
           <button class="btn btn-secondary btn-small" data-action="down" ${index === programItems.length - 1 ? 'disabled' : ''} title="Move down">&darr;</button>
         </div>
       </div>
-      ${programFieldsHtml(item)}
-      <div class="row-actions">
-        <button class="btn btn-small" data-action="save">Save</button>
-        <button class="btn btn-danger btn-small" data-action="delete">Delete</button>
+      ${item.duration ? `<span class="program-duration-badge">${escapeHtml(item.duration)}</span>` : ''}
+      <p class="program-card-desc">${escapeHtml(item.description || '')}</p>
+      <div class="program-card-footer">
+        <button class="btn btn-pill btn-small" data-action="edit">Edit</button>
+        <label class="switch" title="${item.isActive ? 'Active — shown on the live site' : 'Inactive — hidden from the live site'}">
+          <input type="checkbox" data-action="toggle-active" ${item.isActive ? 'checked' : ''}>
+          <span class="slider"></span>
+        </label>
+        <button class="icon-btn-danger" data-action="delete" title="Delete program">&#128465;</button>
       </div>
     `;
 
-    card.querySelector('[data-action="save"]').onclick = async () => {
-      const saveBtn = card.querySelector('[data-action="save"]');
-      saveBtn.disabled = true;
+    card.querySelector('[data-action="edit"]').onclick = () => openProgramModal(item);
+
+    card.querySelector('[data-action="toggle-active"]').onchange = async (e) => {
+      const checked = e.target.checked;
       try {
-        const body = await readProgramFields(card);
-        await apiFetch(`/api/programs/${item._id}`, { method: 'PATCH', body: JSON.stringify(body) });
-        toast('Program saved');
+        await apiFetch(`/api/programs/${item._id}`, { method: 'PATCH', body: JSON.stringify({ isActive: checked }) });
+        toast(checked ? 'Program activated' : 'Program deactivated');
         loadPrograms();
       } catch (err) {
         toast(err.message, 'error');
-      } finally {
-        saveBtn.disabled = false;
+        e.target.checked = !checked;
       }
     };
 
@@ -1093,7 +1147,11 @@ function renderPrograms() {
     list.appendChild(card);
   });
 
-  document.getElementById('newProgramForm').innerHTML = programFieldsHtml({});
+  const addCard = document.createElement('div');
+  addCard.className = 'program-add-card';
+  addCard.textContent = '+ Add Program';
+  addCard.onclick = () => openProgramModal(null);
+  list.appendChild(addCard);
 }
 
 async function swapProgramOrder(indexA, indexB) {
@@ -1113,28 +1171,79 @@ async function swapProgramOrder(indexA, indexB) {
 
 document.getElementById('programRefresh').addEventListener('click', loadPrograms);
 
-document.getElementById('addProgramBtn').addEventListener('click', async () => {
-  const addBtn = document.getElementById('addProgramBtn');
-  const container = document.getElementById('newProgramForm');
-  const name = container.querySelector('[data-field="name"]').value.trim();
+// ---------- Programs: shared edit modal ----------
+const programModalOverlay = document.getElementById('programModalOverlay');
+const programModalEl = document.getElementById('programModal');
 
-  if (!name) {
-    toast('Course name is required', 'error');
-    return;
-  }
+function closeProgramModal() {
+  programModalOverlay.classList.add('hidden');
+  programModalEl.innerHTML = '';
+}
 
-  addBtn.disabled = true;
-  try {
-    const body = await readProgramFields(container);
-    await apiFetch('/api/programs', { method: 'POST', body: JSON.stringify(body) });
-    toast('Program added');
-    loadPrograms();
-  } catch (err) {
-    toast(err.message, 'error');
-  } finally {
-    addBtn.disabled = false;
-  }
+programModalOverlay.addEventListener('click', (e) => {
+  if (e.target === programModalOverlay) closeProgramModal();
 });
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !programModalOverlay.classList.contains('hidden')) closeProgramModal();
+});
+
+function openProgramModal(item) {
+  const isNew = !item;
+
+  programModalEl.innerHTML = `
+    <div class="modal-head">
+      <div>
+        <h2>${isNew ? 'Add Program' : escapeHtml(item.name)}</h2>
+        <p class="modal-sub">${isNew ? 'Create a new MSc course card for the homepage.' : 'Edit this course’s details.'}</p>
+      </div>
+      <button type="button" class="modal-close" data-action="close" aria-label="Close">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      ${programFieldsHtml(item)}
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary btn-small" data-action="cancel">Cancel</button>
+      <button type="button" class="btn btn-pill btn-small" data-action="save">${isNew ? 'Add Program' : 'Save Changes'}</button>
+    </div>
+  `;
+
+  programModalOverlay.classList.remove('hidden');
+
+  programModalEl.querySelector('[data-action="close"]').onclick = closeProgramModal;
+  programModalEl.querySelector('[data-action="cancel"]').onclick = closeProgramModal;
+
+  programModalEl.querySelector('[data-action="save"]').onclick = async () => {
+    const saveBtn = programModalEl.querySelector('[data-action="save"]');
+    const originalLabel = saveBtn.textContent;
+
+    if (isNew && !programModalEl.querySelector('[data-field="name"]').value.trim()) {
+      toast('Course name is required', 'error');
+      return;
+    }
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+    try {
+      const body = await readProgramFields(programModalEl);
+      if (isNew) {
+        await apiFetch('/api/programs', { method: 'POST', body: JSON.stringify(body) });
+        toast('Program added');
+      } else {
+        await apiFetch(`/api/programs/${item._id}`, { method: 'PATCH', body: JSON.stringify(body) });
+        toast('Program saved');
+      }
+      closeProgramModal();
+      loadPrograms();
+    } catch (err) {
+      toast(err.message, 'error');
+      saveBtn.disabled = false;
+      saveBtn.textContent = originalLabel;
+    }
+  };
+}
 
 // Load the first panel's data on page load
 loadEnquiries();

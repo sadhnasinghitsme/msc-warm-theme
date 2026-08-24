@@ -174,15 +174,17 @@
 
     <!-- THEME SETTINGS -->
     <section class="panel" id="panel-theme">
-      <h1>Theme Settings</h1>
-      <p class="page-sub">
-        Edit homepage section content &mdash; no code changes needed. Sections marked "Live on site" appear immediately;
-        others are ready for when you add that section to the homepage.
-      </p>
-      <div class="toolbar">
-        <button class="btn btn-secondary btn-small" id="themeRefresh">Refresh</button>
+      <div class="panel-head-row">
+        <div>
+          <h1>Theme Settings</h1>
+          <p class="page-sub">
+            Edit homepage section content &mdash; no code changes needed. Sections marked "Live on site" appear immediately;
+            others are ready for when you add that section to the homepage.
+          </p>
+        </div>
+        <button class="btn btn-secondary btn-small" id="themeRefresh">&#8635; Refresh</button>
       </div>
-      <div class="content-list" id="themeList"></div>
+      <div class="theme-grid" id="themeList"></div>
       <div class="loading-state" id="themeLoading">Loading...</div>
     </section>
 
@@ -190,24 +192,26 @@
     <section class="panel" id="panel-programs">
       <h1>Programs</h1>
       <p class="page-sub">
-        Manage the 4 MSc course cards shown in the "Choose Your MSc Medical Specialization" section.
+        Manage the <span id="programCount">4</span> MSc course cards shown in the "Choose Your MSc Medical Specialization" section.
         The Eligibility &amp; Course Snapshot table on the homepage is generated automatically from this data.
       </p>
       <div class="toolbar">
         <button class="btn btn-secondary btn-small" id="programRefresh">Refresh</button>
       </div>
-      <div class="content-list" id="programList"></div>
+      <div class="program-grid" id="programList"></div>
       <div class="empty-state" id="programEmpty" style="display:none;">No programs yet.</div>
       <div class="loading-state" id="programLoading">Loading...</div>
-
-      <div class="new-content-form">
-        <h3>Add a new program</h3>
-        <div class="content-list" id="newProgramForm"></div>
-        <button class="btn btn-small" id="addProgramBtn" style="margin-top:12px;">Add Program</button>
-      </div>
     </section>
 
   </main>
+</div>
+
+<div class="modal-overlay hidden" id="themeModalOverlay">
+  <div class="modal" id="themeModal" role="dialog" aria-modal="true"></div>
+</div>
+
+<div class="modal-overlay hidden" id="programModalOverlay">
+  <div class="modal" id="programModal" role="dialog" aria-modal="true"></div>
 </div>
 
 <div class="toast" id="toast"></div>

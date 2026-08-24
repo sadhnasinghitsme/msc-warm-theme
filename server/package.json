@@ -10,7 +10,8 @@
     "create-admin": "node scripts/createAdmin.js",
     "seed-content": "node scripts/seedContent.js",
     "seed-theme-settings": "node scripts/seedThemeSettings.js",
-    "seed-programs": "node scripts/seedPrograms.js"
+    "seed-programs": "node scripts/seedPrograms.js",
+    "seed-faqs": "node scripts/seedFaqs.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
