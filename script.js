@@ -1,3 +1,65 @@
+/* ===== PRIMARY NAV (About Us dropdown — click/tap on mobile & touch, hover-enhanced on desktop via CSS) ===== */
+(function(){
+  var items = Array.prototype.slice.call(document.querySelectorAll('.nav-item.has-dropdown'));
+  if(!items.length) return;
+
+  function closeAll(){
+    items.forEach(function(item){
+      item.classList.remove('open');
+      var trigger = item.querySelector('.dropdown-trigger');
+      if(trigger) trigger.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  items.forEach(function(item){
+    var trigger = item.querySelector('.dropdown-trigger');
+    if(!trigger) return;
+    trigger.addEventListener('click', function(e){
+      e.preventDefault();
+      var isOpen = item.classList.contains('open');
+      closeAll();
+      if(!isOpen){
+        item.classList.add('open');
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  document.addEventListener('click', function(e){
+    var openItem = items.filter(function(item){ return item.classList.contains('open'); })[0];
+    if(openItem && !openItem.contains(e.target)) closeAll();
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeAll();
+  });
+
+  document.addEventListener('click', function(e){
+    if(e.target.closest('.dropdown-menu a')) closeAll();
+  });
+})();
+
+/* ===== ACTIVE NAV LINK (terracotta underline on the current page's nav item) ===== */
+(function(){
+  var path = window.location.pathname.replace(/index\.html$/, '');
+  if(path.length > 1 && path.slice(-1) !== '/') path += '/';
+
+  var topLinks = Array.prototype.slice.call(document.querySelectorAll('.site-nav > .nav-list > .nav-item > a.nav-link'));
+  topLinks.forEach(function(link){
+    if(link.getAttribute('href') === path) link.classList.add('is-active');
+  });
+
+  var dropdownItems = Array.prototype.slice.call(document.querySelectorAll('.nav-item.has-dropdown'));
+  dropdownItems.forEach(function(item){
+    var links = Array.prototype.slice.call(item.querySelectorAll('.dropdown-menu a'));
+    var match = links.some(function(a){ return a.getAttribute('href') === path; });
+    if(match){
+      var trigger = item.querySelector('.dropdown-trigger');
+      if(trigger) trigger.classList.add('is-active');
+    }
+  });
+})();
+
 /* ===== THEME SWITCHER (Light / Warm / Dusk / Dark, persisted to localStorage) ===== */
 (function(){
   var STORAGE_KEY = 'sks-theme';
