@@ -34,7 +34,7 @@ const DIST = path.join(ROOT, 'dist');
 
 // Everything the deployed site needs. Add new top-level HTML pages,
 // folders, or files here — anything not listed stays out of the deploy.
-const ASSETS = ['index.html', 'about', 'academics', 'admission', 'student-life', 'facilities', 'contact', 'careers', 'news-events', 'results', 'alumni', 'placements', 'downloads', 'style.css', 'script.js', 'config.js', 'images', 'videos', 'admin-panel'];
+const ASSETS = ['index.html', 'about', 'academics', 'admission', 'student-life', 'facilities', 'rules-and-regulations', 'gallery', 'contact', 'careers', 'news-events', 'results', 'alumni', 'placements', 'downloads', 'style.css', 'script.js', 'config.js', 'images', 'videos', 'admin-panel'];
 
 function resetDist() {
   fs.rmSync(DIST, { recursive: true, force: true });
