@@ -476,3 +476,56 @@ function escapeHtmlText(str){
       console.warn('Programs unavailable, using page defaults.', err);
     });
 })();
+
+/* ===== IMAGE FALLBACK: swap any image that fails to load for a generated,
+   theme-tinted SVG placeholder instead of showing a broken-image icon ===== */
+(function(){
+  /* Neutral "PHOTO NEEDED" placeholder — same treatment as the message-page
+     cards, so the whole site reads consistently about what is a real photo
+     and what is still awaiting one. */
+  function placeholder(w, h, label){
+    w = Math.max(Math.round(w) || 0, 1);
+    h = Math.max(Math.round(h) || 0, 1);
+    var text = String(label || '').replace(/\s+/g, ' ').trim().replace(/[<&>"]/g, '').slice(0, 46).toUpperCase();
+    var m = Math.min(w, h);
+    var cx = w / 2, cy = h * 0.36, r = Math.max(m * 0.14, 10);
+    var t1 = Math.max(Math.min(m * 0.11, 22), 10);
+    var t2 = Math.max(t1 * 0.62, 8);
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">'
+      + '<rect width="100%" height="100%" fill="#f5ede9"/>'
+      + '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + r.toFixed(1) + '" fill="#e2d4ba"/>'
+      + '<path d="M' + (cx - 1.8 * r).toFixed(1) + ' ' + (cy + 2.7 * r).toFixed(1)
+        + 'c0 ' + (-1.1 * r).toFixed(1) + ' ' + (0.8 * r).toFixed(1) + ' ' + (-1.8 * r).toFixed(1) + ' ' + (1.8 * r).toFixed(1) + ' ' + (-1.8 * r).toFixed(1)
+        + 's' + (1.8 * r).toFixed(1) + ' ' + (0.7 * r).toFixed(1) + ' ' + (1.8 * r).toFixed(1) + ' ' + (1.8 * r).toFixed(1) + 'Z" fill="#e2d4ba"/>'
+      + '<text x="50%" y="' + (h * 0.66).toFixed(1) + '" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" letter-spacing="1" font-size="' + t1.toFixed(1) + '" fill="#b5615a">PHOTO NEEDED</text>'
+      + (text ? '<text x="50%" y="' + (h * 0.66 + t1 + 6).toFixed(1) + '" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="600" letter-spacing="1.2" font-size="' + t2.toFixed(1) + '" fill="#6f6153">' + text + '</text>' : '')
+      + '</svg>';
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  }
+
+  function fix(img){
+    if(!img || img.dataset.phFallback) return;
+    img.dataset.phFallback = '1';
+    var r = img.getBoundingClientRect();
+    var w = img.getAttribute('width') || r.width || img.clientWidth || 400;
+    var h = img.getAttribute('height') || r.height || img.clientHeight || 300;
+    img.src = placeholder(parseFloat(w), parseFloat(h), img.alt);
+  }
+
+  document.addEventListener('error', function(e){
+    var t = e.target;
+    if(t && t.tagName === 'IMG') fix(t);
+  }, true);
+
+  function sweep(){
+    Array.prototype.slice.call(document.images).forEach(function(img){
+      if(img.complete && img.naturalWidth === 0 && img.src) fix(img);
+    });
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', sweep);
+  } else {
+    sweep();
+  }
+  window.addEventListener('load', sweep);
+})();
