@@ -19,6 +19,7 @@
     <div class="nav-item" data-panel="faqs">FAQ Manager</div>
     <div class="nav-item" data-panel="gallery">Gallery</div>
     <div class="nav-item" data-panel="theme">Theme Settings</div>
+    <div class="nav-item" data-panel="navPages">Navbar Pages</div>
     <div class="nav-item" data-panel="programs">Programs</div>
     <div class="nav-spacer"></div>
     <div class="nav-item" id="logoutBtn">Log Out</div>
@@ -188,6 +189,22 @@
       <div class="loading-state" id="themeLoading">Loading...</div>
     </section>
 
+    <!-- NAVBAR PAGES -->
+    <section class="panel" id="panel-navPages">
+      <div class="panel-head-row">
+        <div>
+          <h1>Navbar Pages</h1>
+          <p class="page-sub">
+            Edit the heading, body text, and images for individual pages linked from the site navigation.
+            Sections marked "Live on site" have real published content.
+          </p>
+        </div>
+        <button class="btn btn-secondary btn-small" id="navPageRefresh">&#8635; Refresh</button>
+      </div>
+      <div class="theme-grid" id="navPageList"></div>
+      <div class="loading-state" id="navPageLoading">Loading...</div>
+    </section>
+
     <!-- PROGRAMS -->
     <section class="panel" id="panel-programs">
       <h1>Programs</h1>
@@ -212,6 +229,10 @@
 
 <div class="modal-overlay hidden" id="programModalOverlay">
   <div class="modal" id="programModal" role="dialog" aria-modal="true"></div>
+</div>
+
+<div class="modal-overlay hidden" id="navPageModalOverlay">
+  <div class="modal" id="navPageModal" role="dialog" aria-modal="true"></div>
 </div>
 
 <div class="toast" id="toast"></div>

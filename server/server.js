@@ -18,6 +18,7 @@ const faqRoutes = require('./routes/faqRoutes');
 const galleryRoutes = require('./routes/galleryRoutes');
 const themeSettingsRoutes = require('./routes/themeSettingsRoutes');
 const programRoutes = require('./routes/programRoutes');
+const navPageRoutes = require('./routes/navPageRoutes');
 
 connectDB();
 
@@ -36,7 +37,12 @@ app.use(
   cors({
     origin(origin, callback) {
       // Allow non-browser requests (curl, server-to-server) which send no Origin header.
-      if (!origin || allowedOrigins.includes(origin)) {
+      const isLocalDev =
+        process.env.NODE_ENV !== 'production' &&
+        origin &&
+        /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
+
+      if (!origin || allowedOrigins.includes(origin) || isLocalDev) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
@@ -59,6 +65,7 @@ app.use('/api/faqs', faqRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/theme-settings', themeSettingsRoutes);
 app.use('/api/programs', programRoutes);
+app.use('/api/nav-pages', navPageRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

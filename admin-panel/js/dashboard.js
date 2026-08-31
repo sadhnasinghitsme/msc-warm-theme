@@ -31,6 +31,7 @@ document.querySelectorAll('.nav-item[data-panel]').forEach((item) => {
     if (item.dataset.panel === 'faqs' && !faqsLoaded) loadFaqs();
     if (item.dataset.panel === 'gallery' && !galleryLoaded) loadGallery();
     if (item.dataset.panel === 'theme' && !themeLoaded) loadTheme();
+    if (item.dataset.panel === 'navPages' && !navPagesLoaded) loadNavPages();
     if (item.dataset.panel === 'programs' && !programsLoaded) loadPrograms();
   });
 });
@@ -794,6 +795,20 @@ const ITEM_SHAPE_FIELDS = {
   badge: [
     { key: 'title', label: 'Badge Text', placeholder: 'e.g. 950-Bed Multi-Specialty Hospital' },
   ],
+  // Used by Navbar Pages: Governing Body's card grid of people.
+  member: [
+    { key: 'photoUrl', label: 'Photo URL', placeholder: 'Leave blank to keep the "photo needed" placeholder' },
+    { key: 'name', label: 'Name', placeholder: 'e.g. Prof. (Dr.) Jane Doe' },
+    { key: 'role', label: 'Role', placeholder: 'e.g. Chairman' },
+  ],
+  // Used by Navbar Pages: Staff & Faculty's department sections.
+  department: [
+    { key: 'name', label: 'Department Name', placeholder: 'e.g. Anatomy' },
+    {
+      key: 'faculty', label: 'Faculty', type: 'textarea',
+      placeholder: 'One per line: Name — Title, Department — Degrees/Experience',
+    },
+  ],
 };
 
 function buildItemRowHtml(shape, data) {
@@ -996,6 +1011,514 @@ function openThemeModal(meta, item) {
       toast(`${meta.label} saved`);
       closeThemeModal();
       loadTheme();
+    } catch (err) {
+      toast(err.message, 'error');
+      saveBtn.disabled = false;
+      saveBtn.textContent = originalLabel;
+    }
+  };
+}
+
+// ============================================================
+// NAVBAR PAGES
+// ============================================================
+// Config, one entry per editable page — same idea as THEME_SECTIONS above.
+// textBlockFields/imageFields describe however many body-text blocks and
+// images that particular page actually has.
+const NAV_PAGE_ICONS = {
+  'file-text': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>',
+  user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>',
+  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20v-1a6.2 6.2 0 0 1 8-5.9"/><circle cx="17" cy="9" r="2.6"/><path d="M14.8 12.3A5.6 5.6 0 0 1 21.5 19v1"/></svg>',
+  building: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="9" height="18"/><rect x="13" y="9" width="7" height="12"/><line x1="7" y1="7" x2="7" y2="7.01"/><line x1="10" y1="7" x2="10" y2="7.01"/><line x1="7" y1="11" x2="7" y2="11.01"/><line x1="10" y1="11" x2="10" y2="11.01"/><line x1="7" y1="15" x2="7" y2="15.01"/><line x1="10" y1="15" x2="10" y2="15.01"/></svg>',
+  'clipboard-check': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><path d="M9 12l2 2 4-4"/></svg>',
+  calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+  presentation: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="13" rx="1"/><path d="M8 21l4-5 4 5"/><path d="M12 16v5"/></svg>',
+};
+
+// Shared field set for the "leadership message" pages (VC/Pro-VC/Dean) —
+// a profile block plus a message body, matching the about-message-photo /
+// profile-card layout those three pages already use.
+const LEADERSHIP_TEXT_FIELDS = [
+  { key: 'profileName', label: 'Name' },
+  { key: 'profileTitle', label: 'Title' },
+  { key: 'messageBody', label: 'Message Body', rows: 8 },
+  { key: 'pullQuote', label: 'Pull Quote' },
+];
+const LEADERSHIP_IMAGE_FIELDS = [
+  { key: 'profilePhoto', label: 'Profile Photo (currently a placeholder — upload the real photo when available)' },
+];
+
+const NAV_PAGES = [
+  {
+    key: 'about-mission-vision',
+    label: 'Mission & Vision',
+    live: true,
+    hint: 'About Us — page heading, mission & vision paragraphs, and the campus banner image.',
+    icon: 'file-text',
+    color: 'gold',
+    textBlockFields: [
+      { key: 'missionText', label: 'Mission Paragraph' },
+      { key: 'visionText', label: 'Vision Paragraph' },
+    ],
+    imageFields: [
+      { key: 'bannerImage', label: 'Banner Image (aerial campus photo)' },
+    ],
+  },
+  {
+    key: 'about-vice-chancellor-desk',
+    label: "Vice Chancellor's Desk",
+    live: true,
+    hint: 'About Us — welcome message, profile details, and photo of the Vice Chancellor.',
+    icon: 'user',
+    color: 'maroon',
+    textBlockFields: LEADERSHIP_TEXT_FIELDS,
+    imageFields: LEADERSHIP_IMAGE_FIELDS,
+    defaults: {
+      heading: "Vice Chancellor's Desk",
+      subheading: 'A message from the leadership guiding our academic vision.',
+      textBlocks: {
+        profileName: 'Prof. (Dr.) Mehar Singh Punia',
+        profileTitle: 'Vice Chancellor, SKS International University',
+        messageBody:
+          "Dear Students,\n\nI am fortunate enough to be part of the University that is committed to providing a holistic educational experience for all its students. I believe that education is a powerful tool that can change the world. Our goal is to equip our students with the knowledge, skills, and values that will enable them to succeed in their personal and professional lives and make a positive impact on society.\n\nOur faculty members are experts in their fields and are dedicated to providing high-quality education that is relevant to the needs of today's world. We also prioritize research and innovation, as we believe that it is through these avenues that we can create solutions to some of the world's most pressing problems.\n\nAs a society, we value collaboration and inclusivity, recognizing that diversity is a strength that enables us to broaden our perspectives and understand the world around us better. We are committed to providing a welcoming, safe, and inclusive environment where everyone has the opportunity to succeed.\n\nI look forward to working with all of you and being part of the SKS International University family. Let's work together to create a better future for ourselves and for the world.",
+        pullQuote: 'I believe that education is a powerful tool that can change the world.',
+      },
+    },
+  },
+  {
+    key: 'about-core-committee',
+    label: 'Governing Body / Core Committee',
+    live: true,
+    hint: 'About Us — the card grid of trustees and senior members (photo, name, role).',
+    icon: 'users',
+    color: 'blue',
+    textBlockFields: [],
+    imageFields: [],
+    itemsShape: 'member',
+    defaults: {
+      heading: 'Governing Body / Core Committee',
+      subheading: "The trustees and senior members who guide the institution's governance and long-term direction.",
+      items: [
+        { photoUrl: '', name: '[Name Pending]', role: 'Chairman' },
+        { photoUrl: '', name: '[Name Pending]', role: 'Vice Chancellor' },
+        { photoUrl: '', name: '[Name Pending]', role: 'Pro-Vice Chancellor' },
+        { photoUrl: '', name: '[Name Pending]', role: 'Dean, School of Medicine' },
+        { photoUrl: '', name: '[Name Pending]', role: 'Registrar' },
+        { photoUrl: '', name: '[Name Pending]', role: 'External / Academic Member' },
+      ],
+    },
+  },
+  {
+    key: 'about-pro-vice-chancellor-desk',
+    label: "Pro-Vice Chancellor's Desk",
+    live: true,
+    hint: 'About Us — welcome message, profile details, and photo of the Pro-Vice Chancellor.',
+    icon: 'user',
+    color: 'purple',
+    textBlockFields: LEADERSHIP_TEXT_FIELDS,
+    imageFields: LEADERSHIP_IMAGE_FIELDS,
+    defaults: {
+      heading: "Pro-Vice Chancellor's Desk",
+      subheading: 'A message from the leadership supporting our academic operations.',
+      textBlocks: {
+        profileName: 'Prof. (Dr.) [Pro-Vice Chancellor Name]',
+        profileTitle: 'Pro-Vice Chancellor, SKS International University',
+        messageBody:
+          'Located in the Janambhoomi of Lord Shri Krishna, SKS International University is committed to providing outstanding postgraduate medical education, combining rigorous academics with practical, research-driven training.\n\nThis University is a place of learning that honours time-tested values while opening students to the scientific and technical progress unfolding around us every day. The atmosphere on our campus is secure, cordial, and built to support the all-round intellectual development of every student. I warmly welcome you to our University and assure you of our commitment to building you into a valuable asset for the future of medicine in India.',
+        pullQuote:
+          'I warmly welcome you to our University and assure you of our commitment to building you into a valuable asset for the future of medicine in India.',
+      },
+    },
+  },
+  {
+    key: 'about-dean-message',
+    label: "Dean's Message",
+    live: true,
+    hint: 'About Us — welcome message, profile details, and photo of the Dean.',
+    icon: 'user',
+    color: 'rose',
+    textBlockFields: LEADERSHIP_TEXT_FIELDS,
+    imageFields: LEADERSHIP_IMAGE_FIELDS,
+    defaults: {
+      heading: "Dean's Message",
+      subheading: 'A message from the Dean of the Department of Medical & Allied Health Sciences.',
+      textBlocks: {
+        profileName: 'Dr. Sandeep Kumar Sharma',
+        profileTitle: 'Principal, SKS Hospital Medical College and Research Centre',
+        messageBody:
+          'The stimulating academic environment at SKS International University helps students acquire the knowledge, skills, and professional attitudes needed to excel as postgraduate medical scientists. As students progress through a rigorous, competency-based curriculum, our faculty are committed to shaping them into skilled researchers, clear communicators, lifelong learners, and accountable professionals.\n\nOur campus is clean, green, and safe, with facilities designed to support both academic and personal growth. Student-led councils take the lead in organizing academic, cultural, and extracurricular events throughout the year.',
+        pullQuote: 'Our campus is clean, green, and safe, with facilities designed to support both academic and personal growth.',
+      },
+    },
+  },
+  {
+    key: 'about-sks-group',
+    label: 'SKS Group — About the Trust/Society',
+    live: true,
+    hint: 'About Us — the trust\'s history, its legacy, and the campus entrance banner image.',
+    icon: 'building',
+    color: 'teal',
+    textBlockFields: [
+      { key: 'introText', label: 'Introduction', rows: 6 },
+      { key: 'closingText', label: 'Growth & Affiliations', rows: 6 },
+    ],
+    imageFields: [
+      { key: 'bannerImage', label: 'Banner Image (campus entrance gate)' },
+    ],
+    defaults: {
+      heading: 'SKS Group — About the Trust/Society',
+      subheading: 'The trust behind SKS International University and its network of institutions.',
+      textBlocks: {
+        introText:
+          'The SKS Group traces its roots to the 1980s, when it began building core competencies across turnkey heavy material handling and lifting solutions, agro and food processing, and — eventually — education.\n\nIn 2001, at a time when the industrial city of Durgapur was reeling from large-scale industrial closures, Shri S.K. Sharma took the initiative to invest in education for the public good, founding the Bengal College of Engineering and Technology. That institution marked the beginning of what is today known as SKS Group of Institutions.',
+        closingText:
+          'In the years since, SKS Group of Institutions has grown into a leading educational group spanning 15 institutions and enrolling over 15,000 students, with alumni placed in multinational companies and research institutions across the country. Its technical institutions are approved by AICTE and affiliated with respective state universities; its schools are affiliated with CBSE, New Delhi; and its medical institutions are approved by the Ministry of Health & Family Welfare and the Ministry of AYUSH (Govt. of India), NMC and NCISM, New Delhi.\n\nSKS International University — School of Medicine, Mathura extends this legacy into postgraduate medical education, offering MSc programs built on the same commitment to accessible, high-quality education that has defined the Group since its founding.',
+      },
+    },
+  },
+  {
+    key: 'about-staff-faculty',
+    label: 'Staff & Faculty',
+    live: true,
+    hint: 'About Us — the faculty roster, grouped by department.',
+    icon: 'users',
+    color: 'green',
+    textBlockFields: [],
+    imageFields: [],
+    itemsShape: 'department',
+    defaults: {
+      heading: 'Staff & Faculty',
+      subheading: 'Meet the educators behind our MSc Medical programs.',
+      items: [
+        {
+          name: 'Anatomy',
+          faculty: [
+            'Dr. Neeta Chabra — Department of Anatomy — Expert anatomist; published research on the glenoid cavity and suprascapular notch of the shoulder joint. Active in departmental and college administration.',
+            "Dr. Matangeshwar Nath — Professor, Department of Anatomy — MBBS (JLNMCH Bhagalpur, 2004) · MS (RIMS Ranchi, 2013) · 11 years of experience",
+            'Dr. Shashi Kiran Shukla — Associate Professor, Department of Anatomy — MBBS (MLB Medical College, 1978) · MD (Kerala University, 2014) · 10 years of experience post-MD',
+            'Dr. M. Santosh Kumar Naik — Department of Anatomy — MBBS (Great Eastern Medical School & Hospital, 2019) · MD (GMC Guntur, 2022)',
+          ].join('\n'),
+        },
+        {
+          name: 'Physiology',
+          faculty: [
+            'Prof. Dr. Jayanti Singh — Professor, Department of Physiology — MBBS (Sarojini Naidu Medical College, Agra, 2004) · MD (Santosh Medical College, Ghaziabad, 2013) · 11 years of experience post-MD',
+            "Dr. Sanjay Nagar — Associate Professor, Department of Physiology — MBBS (King George's Medical College, Lucknow, 1992) · MD (Santosh Medical College, 2012) · 12 years of experience post-MD",
+            'Dr. Amit Singh Nirawal — Associate Professor, Department of Physiology — MBBS (LLRM Medical College, Meerut, 2004) · MD (Santosh Medical College, 2012) · 12 years of experience post-MD',
+            'Dr. Anil Kumar — Assistant Professor, Department of Physiology — MBBS (Tajik Abuali ibn Sino State Medical University, 2003) · MD (Santosh Medical College) · Vast experience post-MD',
+            'Dr. R. Rukmini Sharma — Assistant Professor, Department of Physiology — BSc (K.R.G. College, 2006) · MSc & PhD (SNMC Jodhpur) · Vast experience post-MSc',
+          ].join('\n'),
+        },
+        {
+          name: 'Biochemistry',
+          faculty: [
+            'Dr. Sandeep Kumar Sharma — Professor, Department of Biochemistry — MBBS (MGM Medical College, Indore, 2001) · MD (Dr. D.Y. Patil Vidyapeeth, Pune, 2010) · 14 years of experience post-MD',
+            'Dr. Nitin Agrawal — Associate Professor, Department of Biochemistry — MBBS (GRMC, 2006) · MD (VMMC, 2014) · 10 years of experience post-MD',
+            'Dr. Ashraf Ali — Assistant Professor, Department of Biochemistry — MBBS (State University Ukraine, 2013) · MD (Government Medical College, Patiala, 2018) · 6 years of experience post-MD',
+          ].join('\n'),
+        },
+        {
+          name: 'Microbiology',
+          faculty: [
+            'Dr. Chittareddi Devika Rani — Professor, Department of Microbiology — MBBS (KMC Kurnool, 1985) · MD (GMC Hyderabad, 1999) · 25 years of experience post-MD',
+            'Dr. Shalini Gupta — Associate Professor, Department of Microbiology — MBBS (HIMS Dehradun, 2005) · MD (HIMS Dehradun, 2015) · 9 years of experience post-MD',
+            'Dr. Shweta Sharma — Associate Professor, Department of Microbiology — MBBS (Calcutta National Medical College, 1997) · MD (HIMS Dehradun, 2016) · 25 years of experience post-MD',
+            'Dr. Vaibhav Gupta — Associate Professor, Department of Microbiology — MBBS (JNMC Aligarh, 2009) · MD (JNMC Aligarh, 2015) · 9 years of experience post-MD',
+            'Dr. Brajesh Kumar — Associate Professor, Department of Microbiology — MBBS (Darbhanga Medical College, 2011) · MD (JNMC Aligarh, 2020) · 4 years of experience post-MD',
+            'Dr. Ranjan Kumar — Associate Professor, Department of Microbiology — MBBS (Darbhanga Medical College, 2008) · MD (JNMC Aligarh, 2020) · 4 years of experience post-MD',
+          ].join('\n'),
+        },
+      ],
+    },
+  },
+  {
+    key: 'academics-assessment-system',
+    label: 'Assessment System',
+    live: true,
+    hint: 'Academics — the internal-assessment and attendance/pass-criteria explainer text.',
+    icon: 'clipboard-check',
+    color: 'blue',
+    textBlockFields: [
+      { key: 'overviewText', label: 'Assessment Framework Overview', rows: 4 },
+      { key: 'internalAssessmentText', label: 'What Counts Toward Internal Assessment', rows: 4 },
+      { key: 'attendanceText', label: 'Attendance & Passing Requirements', rows: 6 },
+    ],
+    imageFields: [],
+    defaults: {
+      heading: 'Assessment System',
+      subheading: 'How MSc Medical students are evaluated, from internal assessments through university examinations.',
+      textBlocks: {
+        overviewText:
+          'Student performance is assessed through a combination of internal assessment (day-to-day evaluation through assignments, seminar presentations, case studies, practical proficiency, and written tests) and end-of-semester university examinations covering theory and practical/viva components.',
+        internalAssessmentText:
+          'Internal assessment is based on day-to-day evaluation of how students participate in the learning process. This includes assignments, seminar preparation, case presentations, case studies and problem-solving exercises, participation in community health projects, and demonstrated proficiency in a practical skill or small research project.',
+        attendanceText:
+          'A minimum attendance of 75% in theory and 80% in practical/lab sessions is required for eligibility to sit for semester examinations. Students must secure at least 50% marks in university-conducted examinations, assessed separately in theory and practical, to be declared as passed in a subject.\n\nWhere a subject includes more than one paper, a student must secure at least 40% marks in each paper individually, along with a minimum of 50% marks in aggregate across both papers, to pass that subject.',
+      },
+    },
+  },
+  {
+    key: 'academics-exam-schedule',
+    label: 'Exam Schedule',
+    live: true,
+    hint: 'Academics — the term-wise exam pattern explainer text.',
+    icon: 'calendar',
+    color: 'gold',
+    textBlockFields: [
+      { key: 'scheduleText', label: 'Exam Schedule Overview', rows: 5 },
+    ],
+    imageFields: [],
+    defaults: {
+      heading: 'Exam Schedule',
+      subheading: 'A term-wise overview of internal and university examinations across all three phases.',
+      textBlocks: {
+        scheduleText:
+          "Examinations are held at the end of each academic phase rather than on a fixed calendar — each phase's university exam follows the completion of that phase's required theory and practical training. A detailed semester-by-semester exam calendar for the MSc programs will be published here once finalized.",
+      },
+    },
+  },
+  {
+    key: 'academics-curriculum',
+    label: 'Curriculum',
+    live: true,
+    hint: 'Academics — the MSc programme structure and phase-by-phase explainer text.',
+    icon: 'book',
+    color: 'purple',
+    textBlockFields: [
+      { key: 'overviewText', label: 'Programme Structure Overview', rows: 4 },
+      { key: 'phaseStructureText', label: 'How the Phases Build on Each Other', rows: 5 },
+    ],
+    imageFields: [],
+    defaults: {
+      heading: 'Curriculum',
+      subheading: 'An NMC CBME-based curriculum structured across three academic phases.',
+      textBlocks: {
+        overviewText:
+          'The MSc curriculum at SKS International University is structured to build strong theoretical foundations before moving into specialized, research-oriented coursework. Each program is divided into core theory papers, laboratory/practical training, and a dissertation or research project component in the final semester — following the same integration of classroom learning and hands-on lab work that defines all SKS International University programs.',
+        phaseStructureText:
+          'SKS-affiliated medical programs follow a phased structure. Phase I — the foundational phase — spans roughly 13 months (preceded by a one-month Foundation Course) and covers core subjects: Human Anatomy, Physiology, Biochemistry, Introduction to Community Medicine, and Professional Development (attitude, ethics, and communication). This is the same foundational grounding that anchors all four MSc Medical specializations — Anatomy, Physiology, Biochemistry, and Microbiology — before students move into the more specialized, research-oriented coursework of later phases.',
+      },
+    },
+  },
+  {
+    key: 'academics-teaching-methodology',
+    label: 'Teaching Methodology',
+    live: true,
+    hint: 'Academics — pedagogy overview, the Medical Education Unit text, and the teaching-methods card grid.',
+    icon: 'presentation',
+    color: 'rose',
+    textBlockFields: [
+      { key: 'pedagogyText', label: 'Pedagogy Overview', rows: 4 },
+      { key: 'medicalEducationUnitText', label: 'Medical Education Unit', rows: 4 },
+    ],
+    imageFields: [],
+    itemsShape: 'step',
+    defaults: {
+      heading: 'Teaching Methodology',
+      subheading: 'A blend of classroom instruction, hands-on practicals, and hospital-integrated clinical exposure.',
+      textBlocks: {
+        pedagogyText:
+          'Teaching across all MSc Medical programs is lecture-based, supported by dedicated seminar halls and AV aid rooms, and reinforced through lab-based practical sessions. Faculty lead case studies and small-group discussions that connect classroom learning to real clinical and laboratory practice.',
+        medicalEducationUnitText:
+          "SKS International University's Medical Education Unit is the cornerstone of competency-based medical training, aligned with global teaching standards. Under the guidance of dedicated faculty, the unit focuses on effective pedagogy, sound research methodology, and the continuous enrichment of medical studies — supporting both students and faculty members.",
+      },
+      items: [
+        { title: 'Didactic Lectures', description: 'Structured lectures covering core theoretical concepts, delivered by faculty in dedicated AV aid rooms using multimedia and interactive teaching aids.' },
+        { title: 'Practical & Laboratory Sessions', description: 'Hands-on sessions in dedicated subject laboratories, giving students direct experience with specimens, instruments, and techniques.' },
+        { title: 'Case-Based Learning', description: 'Small-group sessions built around real or simulated clinical cases, connecting subject knowledge to practical diagnostic reasoning.' },
+        { title: 'Hospital-Integrated Clinical Exposure', description: 'Direct exposure to patient care settings through our affiliated 950-bed multi-specialty hospital, bridging classroom learning and clinical practice.' },
+        { title: 'Seminars & Journal Clubs', description: 'Regular student-led seminars and journal clubs, held in our seminar halls, that build presentation skills and keep students current with ongoing research.' },
+        { title: 'Formative Assessment & Feedback', description: 'Continuous internal assessments and structured feedback sessions that track progress throughout each phase, not just at final exams.' },
+      ],
+    },
+  },
+];
+
+// Merges a page's saved record over its defaults (defaults are the real
+// live-page copy, so a first-time editor sees actual content instead of a
+// blank form; anything already saved always wins).
+function navPageEffective(meta, item) {
+  const d = meta.defaults || {};
+  return {
+    heading: item.heading || d.heading || '',
+    subheading: item.subheading || d.subheading || '',
+    textBlocks: { ...(d.textBlocks || {}), ...(item.textBlocks || {}) },
+    images: { ...(d.images || {}), ...(item.images || {}) },
+    items: item.items && item.items.length ? item.items : d.items || [],
+  };
+}
+
+let navPagesLoaded = false;
+let navPagesByKey = {};
+
+async function loadNavPages() {
+  document.getElementById('navPageLoading').style.display = 'block';
+  try {
+    const items = await apiFetch('/api/nav-pages');
+    navPagesLoaded = true;
+    navPagesByKey = {};
+    items.forEach((item) => {
+      navPagesByKey[item.pageKey] = item;
+    });
+    renderNavPages();
+  } catch (err) {
+    toast(err.message, 'error');
+  } finally {
+    document.getElementById('navPageLoading').style.display = 'none';
+  }
+}
+
+function renderNavPages() {
+  const list = document.getElementById('navPageList');
+  list.innerHTML = '';
+
+  NAV_PAGES.forEach((meta) => {
+    const item = navPagesByKey[meta.key] || {};
+    const card = document.createElement('div');
+    card.className = 'theme-card';
+
+    card.innerHTML = `
+      <div class="theme-icon-chip ${meta.color}">${NAV_PAGE_ICONS[meta.icon] || ''}</div>
+      <div class="theme-card-title">${escapeHtml(meta.label)}</div>
+      <div class="theme-status ${meta.live ? 'live' : 'pending'}">
+        <span class="dot"></span>${meta.live ? 'Live on site' : 'Not yet wired'}
+      </div>
+      <p class="theme-card-desc">${escapeHtml(meta.hint)}</p>
+      <button class="btn btn-pill btn-small" data-action="edit">Edit</button>
+    `;
+
+    card.querySelector('[data-action="edit"]').onclick = () => openNavPageModal(meta, item);
+
+    list.appendChild(card);
+  });
+}
+
+document.getElementById('navPageRefresh').addEventListener('click', loadNavPages);
+
+// ---------- Navbar Pages: shared edit modal ----------
+const navPageModalOverlay = document.getElementById('navPageModalOverlay');
+const navPageModalEl = document.getElementById('navPageModal');
+
+function closeNavPageModal() {
+  navPageModalOverlay.classList.add('hidden');
+  navPageModalEl.innerHTML = '';
+}
+
+navPageModalOverlay.addEventListener('click', (e) => {
+  if (e.target === navPageModalOverlay) closeNavPageModal();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !navPageModalOverlay.classList.contains('hidden')) closeNavPageModal();
+});
+
+function openNavPageModal(meta, item) {
+  const eff = navPageEffective(meta, item);
+
+  navPageModalEl.innerHTML = `
+    <div class="modal-head">
+      <div>
+        <h2>${escapeHtml(meta.label)}</h2>
+        <p class="modal-sub">${meta.live ? 'Live on site' : 'Not yet wired to the site'} &middot; ${escapeHtml(meta.hint)}</p>
+      </div>
+      <button type="button" class="modal-close" data-action="close" aria-label="Close">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <label>Page Heading</label>
+      <input type="text" data-field="heading" value="${escapeHtml(eff.heading)}">
+      <label>Subheading / Tagline</label>
+      <input type="text" data-field="subheading" value="${escapeHtml(eff.subheading)}">
+
+      ${meta.textBlockFields.map((f) => `
+        <label>${escapeHtml(f.label)}</label>
+        <textarea rows="${f.rows || 4}" data-textblock-field="${f.key}">${escapeHtml(eff.textBlocks[f.key] || '')}</textarea>
+      `).join('')}
+
+      ${meta.imageFields.map((f) => `
+        <label>${escapeHtml(f.label)}</label>
+        <input type="file" data-image-file="${f.key}" accept="image/*">
+        <input type="hidden" data-image-field="${f.key}" value="${escapeHtml(eff.images[f.key] || '')}">
+        ${eff.images[f.key] ? `<img class="image-preview" src="${escapeHtml(eff.images[f.key])}" alt="">` : ''}
+      `).join('')}
+
+      ${meta.itemsShape ? `
+        <label>${escapeHtml(meta.label)} Items</label>
+        <div class="theme-items-list" data-items-shape="${meta.itemsShape}">
+          ${eff.items.map((it) => buildItemRowHtml(meta.itemsShape, it)).join('')}
+        </div>
+        <button type="button" class="btn btn-secondary btn-small" data-action="add-item">+ Add Item</button>
+      ` : ''}
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary btn-small" data-action="cancel">Cancel</button>
+      <button type="button" class="btn btn-pill btn-small" data-action="save">Save Changes</button>
+    </div>
+  `;
+
+  navPageModalOverlay.classList.remove('hidden');
+
+  navPageModalEl.querySelector('[data-action="close"]').onclick = closeNavPageModal;
+  navPageModalEl.querySelector('[data-action="cancel"]').onclick = closeNavPageModal;
+
+  const itemsList = navPageModalEl.querySelector('.theme-items-list');
+  function wireRemoveButtons() {
+    itemsList.querySelectorAll('[data-action="remove-item"]').forEach((btn) => {
+      btn.onclick = () => btn.closest('.theme-item-row').remove();
+    });
+  }
+  if (itemsList) {
+    wireRemoveButtons();
+    navPageModalEl.querySelector('[data-action="add-item"]').onclick = () => {
+      itemsList.insertAdjacentHTML('beforeend', buildItemRowHtml(meta.itemsShape, {}));
+      wireRemoveButtons();
+    };
+  }
+
+  navPageModalEl.querySelector('[data-action="save"]').onclick = async () => {
+    const saveBtn = navPageModalEl.querySelector('[data-action="save"]');
+    const originalLabel = saveBtn.textContent;
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+
+    try {
+      const newTextBlocks = {};
+      meta.textBlockFields.forEach((f) => {
+        newTextBlocks[f.key] = navPageModalEl.querySelector(`[data-textblock-field="${f.key}"]`).value.trim();
+      });
+
+      const newImages = {};
+      for (const f of meta.imageFields) {
+        let url = navPageModalEl.querySelector(`[data-image-field="${f.key}"]`).value;
+        const fileInput = navPageModalEl.querySelector(`[data-image-file="${f.key}"]`);
+        if (fileInput.files.length) {
+          const formData = new FormData();
+          formData.append('image', fileInput.files[0]);
+          const uploaded = await apiFetch('/api/upload', { method: 'POST', body: formData });
+          url = uploaded.url;
+        }
+        newImages[f.key] = url;
+      }
+
+      const body = {
+        heading: navPageModalEl.querySelector('[data-field="heading"]').value.trim(),
+        subheading: navPageModalEl.querySelector('[data-field="subheading"]').value.trim(),
+        textBlocks: newTextBlocks,
+        images: newImages,
+      };
+
+      if (meta.itemsShape) {
+        body.items = Array.from(itemsList.querySelectorAll('.theme-item-row')).map((row) =>
+          readItemRow(meta.itemsShape, row)
+        );
+      }
+
+      await apiFetch(`/api/nav-pages/${meta.key}`, { method: 'PUT', body: JSON.stringify(body) });
+      toast(`${meta.label} saved`);
+      closeNavPageModal();
+      loadNavPages();
     } catch (err) {
       toast(err.message, 'error');
       saveBtn.disabled = false;
