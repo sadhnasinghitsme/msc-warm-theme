@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="soft">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Karla:wght@300;400;500&display=swap" rel="stylesheet">
 <!-- SEO:TITLE --><title>SKS World School, Greater Noida West &mdash; CBSE School (Affiliation No. 2134098)</title>
 <!-- SEO:DESCRIPTION --><meta name="description" content="SKS World School, Greater Noida West is an English-medium, co-educational, CBSE curriculum-based school under the SKS Educational & Social Trust. HS-04, Sector-16, Greater Noida West.">
 <!-- SEO:CANONICAL --><link rel="canonical" href="https://skswsgnw.ac.in/">
@@ -106,8 +107,8 @@
   </div>
 </header>
 
-<!-- ============ HERO (rotating photo carousel behind fixed hero content) ============ -->
-<section class="hero-carousel" aria-label="SKS World School" role="region">
+<!-- ============ HERO CAROUSEL (clean — no overlaid text) ============ -->
+<section class="hero-carousel hero-carousel--standalone" aria-label="SKS World School photo slideshow" role="region">
   <div class="carousel-slide is-active" data-slide="0">
     <div class="slide-media">
       <img class="kb" src="https://skswsgnw.ac.in/wp-content/uploads/2025/01/edit-2.jpg" alt="Republic Day celebration at SKS World School, Greater Noida West" loading="eager" fetchpriority="high" decoding="async" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%271600%27%20height%3D%27900%27%3E%3Crect%20width%3D%271600%27%20height%3D%27900%27%20fill%3D%27%235f2020%27%2F%3E%3C%2Fsvg%3E'">
@@ -158,12 +159,15 @@
     <span class="arch arch-2"></span>
     <span class="arch arch-3"></span>
   </div>
+</section>
 
-  <div class="hero-grid">
+<!-- ============ HERO INTRO (heading, badges, enquiry form — moved below carousel) ============ -->
+<section class="section hero-intro-section" id="enquiry-form">
+  <div class="hero-grid hero-intro-grid">
     <div>
-      <h1 class="hero-title" data-section-key="hero" data-field="title">SKS World School &mdash; One of the Best Schools in Greater Noida West</h1>
-      <p class="hero-desc" data-section-key="hero" data-field="description">SKS World School, being one of the best schools in Greater Noida West, is an English-medium, co-educational institution that runs under the aegis of the SKS Educational &amp; Social Trust, led by its dynamic and visionary Chairman Shri S.K. Sharma. The school provides CBSE curriculum-based education and is located in the heart of Greater Noida West &mdash; 3 km from Crossing Republik (Ghaziabad), 5 km from Sector-119 Noida, and 9 km from Noida City Centre Metro Station.</p>
-      <ul class="trust-list">
+      <h1 class="hero-title hero-intro-title" data-section-key="hero" data-field="title">SKS World School &mdash; One of the Best Schools in Greater Noida West</h1>
+      <p class="hero-desc hero-intro-desc" data-section-key="hero" data-field="description">SKS World School, being one of the best schools in Greater Noida West, is an English-medium, co-educational institution that runs under the aegis of the SKS Educational &amp; Social Trust, led by its dynamic and visionary Chairman Shri S.K. Sharma. The school provides CBSE curriculum-based education and is located in the heart of Greater Noida West &mdash; 3 km from Crossing Republik (Ghaziabad), 5 km from Sector-119 Noida, and 9 km from Noida City Centre Metro Station.</p>
+      <ul class="trust-list trust-list--light">
         <li><span class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l6 6L20 6"/></svg></span>Affiliated to CBSE, New Delhi (Affiliation No. 2134098)</li>
         <li><span class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.05 7-12A7 7 0 0 0 5 10c0 4.95 7 12 7 12z"/><circle cx="12" cy="10" r="2.2"/></svg></span>HS-04, Sector-16, Greater Noida West, (U.P)</li>
         <li><span class="trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><circle cx="16" cy="9" r="2.6"/><path d="M3 19c0-3 2.2-5 5-5s5 2 5 5"/><path d="M13.5 14.2c2.4.3 4.5 2 4.5 4.8"/></svg></span>Teacher&ndash;Student Ratio of 1:20</li>
@@ -173,16 +177,16 @@
       </ul>
       <div class="hero-cta">
         <a href="#enquiry-form" class="btn btn-gold" data-section-key="hero" data-field="buttonText" data-href-field="buttonLink">Send an Admission Enquiry</a>
-        <p class="fine">No enquiry fee. Your details remain confidential. Our admission team will contact you shortly.</p>
+        <p class="fine hero-intro-fine">No enquiry fee. Your details remain confidential. Our admission team will contact you shortly.</p>
       </div>
     </div>
 
     <div class="hero-card">
       <h3>Quick Enquiry Form</h3>
       <form onsubmit="return false;" data-enquiry-form data-source="hero-quick-form" style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
-        <input type="text" data-field="name" placeholder="Full Name" style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
-        <input type="tel" data-field="phone" placeholder="Phone Number" style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
-        <select data-field="specialization" style="padding:11px 12px;border:1px solid var(--line);border-radius:5px;font-size:14px;">
+        <input type="text" data-field="name" placeholder="Full Name" style="padding:11px 12px;border:1px solid var(--hairline);border-radius:5px;font-size:14px;font-family:var(--font-body);">
+        <input type="tel" data-field="phone" placeholder="Phone Number" style="padding:11px 12px;border:1px solid var(--hairline);border-radius:5px;font-size:14px;font-family:var(--font-body);">
+        <select data-field="specialization" style="padding:11px 12px;border:1px solid var(--hairline);border-radius:5px;font-size:14px;font-family:var(--font-body);">
           <option>Select Class</option>
           <option>Pre-Primary</option><option>Primary (I&ndash;V)</option><option>Middle (VI&ndash;VIII)</option><option>Secondary (IX&ndash;X)</option><option>Senior Secondary (XI&ndash;XII)</option>
         </select>
