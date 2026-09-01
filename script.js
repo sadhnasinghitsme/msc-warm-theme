@@ -256,8 +256,23 @@
       var specialization = specEl ? specEl.value : '';
       if(specialization.indexOf('Select') === 0) specialization = '';
 
+      /* Optional extended fields (used by the Admission Enquiry form). */
+      var extraFieldNames = ['session', 'fatherName', 'dob', 'admissionClass', 'address'];
+      var extras = {};
+      extraFieldNames.forEach(function(key){
+        var el = form.querySelector('[data-field="' + key + '"]');
+        if(el) extras[key] = el.value.trim();
+      });
+
       if(!name || !phone){
         setStatus(statusEl, 'Please enter your name and phone number.', true);
+        return;
+      }
+
+      /* If the form declares an extended field, treat every field as required. */
+      var missingExtra = Object.keys(extras).some(function(key){ return !extras[key]; });
+      if(missingExtra || (Object.keys(extras).length && !email)){
+        setStatus(statusEl, 'Please fill in all the fields.', true);
         return;
       }
 
@@ -268,6 +283,9 @@
       };
       if(email) payload.email = email;
       if(specialization) payload.specialization = specialization;
+      Object.keys(extras).forEach(function(key){
+        if(extras[key]) payload[key] = extras[key];
+      });
 
       if(submitBtn){
         submitBtn.disabled = true;

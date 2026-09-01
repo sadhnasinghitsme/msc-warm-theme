@@ -11,12 +11,28 @@ const createEnquiry = asyncHandler(async (req, res) => {
     throw new Error(errors.array()[0].msg);
   }
 
-  const { name, phone, email, specialization, source } = req.body;
+  const {
+    name,
+    phone,
+    email,
+    specialization,
+    source,
+    session,
+    fatherName,
+    dob,
+    admissionClass,
+    address,
+  } = req.body;
 
   const enquiry = await Enquiry.create({
     name,
     phone,
     email,
+    session: session || '',
+    fatherName: fatherName || '',
+    dob: dob || '',
+    admissionClass: admissionClass || '',
+    address: address || '',
     specialization: specialization || 'Not specified',
     source: source || 'other',
   });
@@ -25,8 +41,13 @@ const createEnquiry = asyncHandler(async (req, res) => {
     subject: `New admission enquiry — ${name}`,
     html: `
       <h2>New Admission Enquiry</h2>
-      <p><strong>Name:</strong> ${name}</p>
-      <p><strong>Phone:</strong> ${phone}</p>
+      <p><strong>Student Name:</strong> ${name}</p>
+      <p><strong>Father's Name:</strong> ${enquiry.fatherName || 'Not provided'}</p>
+      <p><strong>Date of Birth:</strong> ${enquiry.dob || 'Not provided'}</p>
+      <p><strong>Academic Session:</strong> ${enquiry.session || 'Not provided'}</p>
+      <p><strong>Admission for Class:</strong> ${enquiry.admissionClass || 'Not provided'}</p>
+      <p><strong>Address:</strong> ${enquiry.address || 'Not provided'}</p>
+      <p><strong>Contact Number:</strong> ${phone}</p>
       <p><strong>Email:</strong> ${email || 'Not provided'}</p>
       <p><strong>Specialization:</strong> ${enquiry.specialization}</p>
       <p><strong>Source:</strong> ${enquiry.source}</p>

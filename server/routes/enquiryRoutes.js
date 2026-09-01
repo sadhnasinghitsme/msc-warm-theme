@@ -19,6 +19,11 @@ router.post(
     body('name').trim().notEmpty().withMessage('Name is required').isLength({ max: 120 }),
     body('phone').trim().notEmpty().withMessage('Phone number is required').isLength({ max: 20 }),
     body('email').optional({ checkFalsy: true }).trim().isEmail().withMessage('Email must be valid'),
+    body('session').optional({ checkFalsy: true }).trim().isLength({ max: 20 }),
+    body('fatherName').optional({ checkFalsy: true }).trim().isLength({ max: 120 }),
+    body('dob').optional({ checkFalsy: true }).trim().isLength({ max: 20 }),
+    body('admissionClass').optional({ checkFalsy: true }).trim().isLength({ max: 40 }),
+    body('address').optional({ checkFalsy: true }).trim().isLength({ max: 400 }),
     body('specialization')
       .optional({ checkFalsy: true })
       .isIn(['Microbiology', 'Biochemistry', 'Anatomy', 'Physiology']),

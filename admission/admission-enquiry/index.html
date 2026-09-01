@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Karla:wght@300;400;500&display=swap" rel="stylesheet">
-<!-- SEO:TITLE --><title>Academic Achievers &mdash; SKS World School, Greater Noida West</title>
-<!-- SEO:DESCRIPTION --><meta name="description" content="Top-ranking MSc Medical students recognized for academic excellence at SKS World School, Greater Noida West, Greater Noida West.">
-<!-- SEO:CANONICAL --><link rel="canonical" href="https://skswsgnw.ac.in/student-life/achievers/">
+<!-- SEO:TITLE --><title>Admission Enquiry &mdash; SKS World School, Greater Noida West</title>
+<!-- SEO:DESCRIPTION --><meta name="description" content="Submit an admission enquiry for SKS World School, Greater Noida West. Share your child's details and our admission team will contact you shortly.">
+<!-- SEO:CANONICAL --><link rel="canonical" href="https://skswsgnw.ac.in/admission/admission-enquiry/">
 <!-- SEO:OG_IMAGE --><meta property="og:image" content="https://skswsgnw.ac.in/wp-content/uploads/2026/01/Logo-1-259x76.webp">
 </head>
 <!--
   The four tags above are managed from the admin panel's SEO / Meta Tags
   page. build-meta.js overwrites the content inside each tag (leaving the
   marker comment and tag itself in place) with whatever is saved in the
-  PageMeta collection for pagePath "student-life/achievers/index.html". If
-  no PageMeta entry exists for this page, the values above are left
+  PageMeta collection for pagePath "admission/admission-enquiry/index.html".
+  If no PageMeta entry exists for this page, the values above are left
   untouched and act as the fallback.
 -->
 <body>
@@ -109,17 +109,126 @@
 
 <!-- ============ PAGE INTRO ============ -->
 <section class="about-page-hero">
-  <div class="eyebrow">Student Life</div>
-  <h1>Academic Achievers</h1>
-  <p>Recognizing students who have excelled across our MSc Medical programs.</p>
+  <div class="eyebrow">Admission</div>
+  <h1>Admission Enquiry</h1>
+  <p>Share your child's details below and our admission team will get in touch with you shortly. There is no enquiry fee, and your information is kept confidential.</p>
 </section>
 
-<!-- ============ ACHIEVERS ============ -->
+<!-- ============ ENQUIRY FORM ============ -->
 <section class="section">
+  <div class="section-head center">
+    <div class="eyebrow">Enquiry Form</div>
+    <h2>Admission Enquiry Form</h2>
+    <p>All fields are required. Please fill in the details carefully.</p>
+  </div>
+
+  <style>
+    .enq-form-wrap{max-width:720px;margin:0 auto;}
+    .enq-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .enq-field{display:flex;flex-direction:column;gap:6px;}
+    .enq-field.enq-full{grid-column:1 / -1;}
+    .enq-field label{font-size:13px;font-weight:500;color:var(--brick);}
+    .enq-field input,
+    .enq-field select{
+      padding:11px 12px;border:1px solid var(--hairline);border-radius:5px;
+      font-size:14px;font-family:var(--font-body);background:var(--surface);color:inherit;
+    }
+    .enq-form-actions{margin-top:20px;text-align:center;}
+    .enq-form-actions .btn{border:none;cursor:pointer;}
+    [data-form-status]{font-size:13px;margin:12px 0 0;min-height:1em;text-align:center;}
+    @media (max-width:640px){ .enq-form-grid{grid-template-columns:1fr;} }
+  </style>
+
+  <div class="enq-form-wrap">
+    <div class="enquiry-form-card">
+      <form onsubmit="return false;" data-enquiry-form data-source="enquiry-section" novalidate>
+        <div class="enq-form-grid">
+          <div class="enq-field enq-full">
+            <label for="enq-name">Student Name</label>
+            <input type="text" id="enq-name" data-field="name" placeholder="Student's full name" required>
+          </div>
+
+          <div class="enq-field">
+            <label for="enq-session">Academic Session</label>
+            <select id="enq-session" data-field="session" required>
+              <option value="">Select Session</option>
+              <option>2026-27</option>
+              <option>2027-28</option>
+            </select>
+          </div>
+
+          <div class="enq-field">
+            <label for="enq-father">Father's Name</label>
+            <input type="text" id="enq-father" data-field="fatherName" placeholder="Father's full name" required>
+          </div>
+
+          <div class="enq-field">
+            <label for="enq-dob">Date of Birth</label>
+            <input type="date" id="enq-dob" data-field="dob" required>
+          </div>
+
+          <div class="enq-field">
+            <label for="enq-class">Admission for Class</label>
+            <select id="enq-class" data-field="admissionClass" required>
+              <option value="">Select Class</option>
+              <option>Pre-Nursery</option>
+              <option>Nursery</option>
+              <option>KG</option>
+              <option>Class I</option>
+              <option>Class II</option>
+              <option>Class III</option>
+              <option>Class IV</option>
+              <option>Class V</option>
+              <option>Class VI</option>
+              <option>Class VII</option>
+              <option>Class VIII</option>
+              <option>Class IX</option>
+              <option>Class X</option>
+              <option>Class XI</option>
+              <option>Class XII</option>
+            </select>
+          </div>
+
+          <div class="enq-field enq-full">
+            <label for="enq-address">Address</label>
+            <input type="text" id="enq-address" data-field="address" placeholder="Residential address" required>
+          </div>
+
+          <div class="enq-field">
+            <label for="enq-phone">Contact Number</label>
+            <input type="tel" id="enq-phone" data-field="phone" placeholder="10-digit mobile number" required>
+          </div>
+
+          <div class="enq-field">
+            <label for="enq-email">Email</label>
+            <input type="email" id="enq-email" data-field="email" placeholder="you@example.com" required>
+          </div>
+        </div>
+
+        <div class="enq-form-actions">
+          <button type="submit" class="btn btn-gold">Submit Enquiry</button>
+        </div>
+        <p data-form-status></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HELP STRIP ============ -->
+<section class="section alt">
   <div class="wrap">
-    <!-- TODO: no real achiever data available yet — do not invent names/achievements -->
+    <div class="section-head center">
+      <div class="eyebrow">Need Help?</div>
+      <h2>Talk to Our Admission Team</h2>
+      <p>Prefer to speak with us directly? Call the admission helpline or visit the Administration Office on working days from 9:00 AM to 2:00 PM.</p>
+    </div>
     <div class="prose" style="text-align:center;">
-      <p>Content coming soon.</p>
+      <p>Phone: <span data-section-key="contact" data-extra-field="phone">+91-9891081270</span><br>Email: <span data-section-key="contact" data-extra-field="email">contact@skswsgnw.ac.in</span></p>
+      <p style="white-space:pre-line;" data-section-key="contact" data-extra-field="address">SKS World School, Greater Noida West
+HS-04, Sector-16, Greater Noida West, (U.P)</p>
+      <div style="margin-top:24px;">
+        <a href="/admission/admission-guidelines/" class="btn btn-outline">Admission Guidelines</a>
+      </div>
     </div>
   </div>
 </section>
